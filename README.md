@@ -3,6 +3,7 @@ mudoku
 
 A sudoku solver using LEGO and Matlab.
 
+<<<<<<< HEAD
 ## Class Structure
 
 ### AbstractScanner
@@ -21,3 +22,6 @@ A sudoku solver using LEGO and Matlab.
 File **hardware.m** contains defines for Ssnor ports like:
 
     LIMIT_SWITCH_RIGHT = SENSOR_3 % the right limit switch is on sensor port 3
+=======
+jeah
+>>>>>>> reame edit
