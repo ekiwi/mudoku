@@ -1,4 +1,4 @@
-classdef HardwareAbstractionLayer   
+classdef HardwareAbstractionLayer < handle   
     
     % HardwareAbstractionLayer: Wrapper for the hardware layer
     % 
@@ -20,13 +20,13 @@ classdef HardwareAbstractionLayer
     
     properties (Access = 'private')
         
-        NXTMAC1 = ''; % nxt1 -> Motor (AB->x, C->y)
-                      %         SENSOR_1->left Sensor
-                      %         SENSOR_2->middle Sensor
-                      %         SENSOR_3->right Sensor
-        NXTMAC2 = ''; % nxt2 -> Motor (A->z, B->Lamp1, C->Lamp2)
-                      %         SENSOR_1->pressureLeft, 
-                      %         SENSOR_2->pressureRight)
+        % nxt1 -> Motor (AB->x, C->y)
+        %         SENSOR_1->left Sensor
+        %         SENSOR_2->middle Sensor
+        %         SENSOR_3->right Sensor
+        % nxt2 -> Motor (A->z, B->Lamp1, C->Lamp2)
+        %         SENSOR_1->pressureLeft, 
+        %         SENSOR_2->pressureRight)
         
         nxtHandle1 = 0;
         nxtHandle2 = 0;
@@ -42,7 +42,7 @@ classdef HardwareAbstractionLayer
         leftLightSensor = 0;
     end
     
-    properties (Access = 'publi')
+    properties (Access = 'public')
         maxStepsWidth = 0;   % the max amount of steps which the sledge can move
     end
     
@@ -65,10 +65,10 @@ classdef HardwareAbstractionLayer
     methods
         
         % constructor
-        function obj = HardwareAbstractionLayer()
+        function obj = HardwareAbstractionLayer(varargin)
             COM_CloseNXT('all');
-            obj.nxtHandle1 = COM_OpenNXTEx('USB',NXTMAC1);
-            obj.nxtHandle2 = COM_OpenNXTEx('USB',NXTMAC2);
+            obj.nxtHandle1 = COM_OpenNXTEx('USB','00165311BC5D');
+            obj.nxtHandle2 = COM_OpenNXTEx('USB','00165302F03F');
             
             obj.pressureLeft = OpenSwitch(SENSOR_1, obj.nxtHandle2);
             obj.pressureRight = OpenSwitch(SENSOR_2, obj.nxtHandle2);
