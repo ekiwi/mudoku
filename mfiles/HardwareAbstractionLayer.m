@@ -31,9 +31,6 @@ classdef HardwareAbstractionLayer < handle
         nxtHandle1 = 0;
         nxtHandle2 = 0;
         
-        pressureLeft = 0;
-        pressureRight = 0;
-        
         lamp1 = 0;
         lamp2 = 0;
         
@@ -70,8 +67,8 @@ classdef HardwareAbstractionLayer < handle
             obj.nxtHandle1 = COM_OpenNXTEx('USB','00165311BC5D');
             obj.nxtHandle2 = COM_OpenNXTEx('USB','00165302F03F');
             
-            obj.pressureLeft = OpenSwitch(SENSOR_1, obj.nxtHandle2);
-            obj.pressureRight = OpenSwitch(SENSOR_2, obj.nxtHandle2);
+            OpenSwitch(SENSOR_1, obj.nxtHandle2);
+            OpenSwitch(SENSOR_2, obj.nxtHandle2);
             
             obj.leftLightSensor = OpenLight(SENSOR_1, 'ACTIVE', obj.nxtHandle1);
             obj.middleLightSensor = OpenLight(SENSOR_2, 'ACTIVE', obj.nxtHandle1);
