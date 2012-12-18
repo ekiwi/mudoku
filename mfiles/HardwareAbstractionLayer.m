@@ -34,9 +34,9 @@ classdef HardwareAbstractionLayer < handle
         lamp1 = 0;
         lamp2 = 0;
         
-        rightLightSensor = 0;
-        middleLightSensor = 0;
-        leftLightSensor = 0;
+        %rightLightSensor = 0;
+        %middleLightSensor = 0;
+        %leftLightSensor = 0;
     end
     
     properties (Access = 'public')
@@ -46,7 +46,7 @@ classdef HardwareAbstractionLayer < handle
     methods (Access = 'private')
     
         % creates a motor object and also accept negative steps
-        function motorObj = createMotorObj(port, power, steps)
+        function motorObj = createMotorObj(obj, port, power, steps)
         
             if(steps < 0)
                 power = -power;
@@ -55,12 +55,13 @@ classdef HardwareAbstractionLayer < handle
             motorObj = NXTMotor(port, 'Power', floor(power), 'TachoLimit', floor(abs(steps)), 'SpeedRegulation', 1);
             
         end
+
     
     end
     
     
     methods
-        
+
         % constructor
         function obj = HardwareAbstractionLayer(varargin)
             COM_CloseNXT('all');
@@ -70,9 +71,9 @@ classdef HardwareAbstractionLayer < handle
             OpenSwitch(SENSOR_1, obj.nxtHandle2);
             OpenSwitch(SENSOR_2, obj.nxtHandle2);
             
-            obj.leftLightSensor = OpenLight(SENSOR_1, 'ACTIVE', obj.nxtHandle1);
-            obj.middleLightSensor = OpenLight(SENSOR_2, 'ACTIVE', obj.nxtHandle1);
-            obj.rightLightSensor = OpenLight(SENSOR_3, 'ACTIVE', obj.nxtHandle1);
+            OpenLight(SENSOR_1, 'ACTIVE', obj.nxtHandle1);
+            OpenLight(SENSOR_2, 'ACTIVE', obj.nxtHandle1);
+            OpenLight(SENSOR_3, 'ACTIVE', obj.nxtHandle1);
         end
         
         % destructor
@@ -173,27 +174,27 @@ classdef HardwareAbstractionLayer < handle
         
         % moves forward and waits until it is finished
         function motorX = moveForwardsW(obj, steps)
-            motorX = createMotorObj('AB', -20, steps);
+            motorX = obj.createMotorObj('AB', -20, steps);
             motorX.SendToNXT(obj.nxtHandle1);
             motorX.WaitFor(0);
         end
         
         % moves backwards and waits until it is finished
         function motorX = moveBackwardsW(obj, steps)
-            motorX = createMotorObj('AB', 20, steps);
+            motorX = obj.createMotorObj('AB', 20, steps);
             motorX.SendToNXT(obj.nxtHandle1);
             motorX.WaitFor(0);
         end
         
         % moves forward asynchron
         function motorX = moveForwards(obj, steps)
-            motorX = createMotorObj('AB', -20, steps);
+            motorX = obj.createMotorObj('AB', -20, steps);
             motorX.SendToNXT(obj.nxtHandle1);
         end
         
         % moves backward asynchron
         function motorX = moveBackwards(obj, steps)
-            motorX = createMotorObj('AB', 20, steps);
+            motorX = obj.createMotorObj('AB', 20, steps);
             motorX.SendToNXT(obj.nxtHandle1);
         end
         %% end
