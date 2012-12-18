@@ -3,3 +3,6 @@
 
 # gedit backups #
 *~
+
+# cell save files #
+*.cells

@@ -1,4 +1,4 @@
-classdef AbstractScanner
+classdef AbstractScanner < handle
 
     % AbstractScanner: Scanner Interface
     %
@@ -18,7 +18,7 @@ classdef AbstractScanner
         cells = [];
     end
 
-    methods
+    methods (Access = 'public')
         function img_matrix = getCell(obj, x, y)
             if ~isempty(obj.cells)
                 s = size(obj.cells);
@@ -31,10 +31,20 @@ classdef AbstractScanner
                 error('No cell data available!');
             end
         end
+
+        function saveCells(obj, fileName)
+            c = obj.cells;
+            save(fileName, 'c', '-mat');
+        end
+
+        function loadCells(obj, fileName)
+            load(fileName, 'c', '-mat');
+            obj.cells = c;
+        end
     end
 
     methods (Access = 'public')
-        function obj = addCell(obj, x, y, cell)
+        function setCell(obj, x, y, cell)
             obj.cells(x,y,:,:) = cell;
         end
     end
