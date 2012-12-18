@@ -2,9 +2,8 @@ classdef HardwareAbstractionLayer < handle
     
     % HardwareAbstractionLayer: Wrapper for the hardware layer
     % 
-    % Syntax
-    %   
     % Syntax 
+    %   obj = HardwareAbstractionLayer(varargin)
     %
     % Description
     %
