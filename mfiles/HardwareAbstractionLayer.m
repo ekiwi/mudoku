@@ -152,7 +152,15 @@ classdef HardwareAbstractionLayer < handle
             motorY = obj.createMotorObj('C', -100, steps);
             
             motorY.SendToNXT(obj.nxtHandle1);
-            motorY.WaitFor(0, obj.nxtHandle1);
+            
+            data = motorY.ReadFromNXT(obj.nxtHandle1);
+            while(data.IsRunning && data2.IsRunning)
+                if(obj.reachedEnd())
+                    % end reached -> abort!
+                    motorY.Stop('off', obj.nxtHandle1);
+                end
+                data = motorY.ReadFromNXT(obj.nxtHandle1);
+            end
         end
         
         % moves left and waits until it is finished
@@ -160,7 +168,15 @@ classdef HardwareAbstractionLayer < handle
             motorY = obj.createMotorObj('C', 100, steps);
             
             motorY.SendToNXT(obj.nxtHandle1);
-            motorY.WaitFor(0, obj.nxtHandle1);
+            
+            data = motorY.ReadFromNXT(obj.nxtHandle1);
+            while(data.IsRunning && data2.IsRunning)
+                if(obj.reachedEnd())
+                    % end reached -> abort!
+                    motorY.Stop('off', obj.nxtHandle1);
+                end
+                data = motorY.ReadFromNXT(obj.nxtHandle1);
+            end
         end
         %% end
         
@@ -171,34 +187,17 @@ classdef HardwareAbstractionLayer < handle
         % moves forward and waits until it is finished
         function [motorX1 motorX2] = moveForwardsW(obj, steps)
             [motorX1 motorX2] = obj.moveForwards(steps);
-
-            data1 = motorX1.ReadFromNXT(obj.nxtHandles1);
-            data2 = motorX2.ReadFromNXT(obj.nxtHandles1);
-
-            while(data1.IsRunning && data2.IsRunning)
-                if(obj.reachedEnd())
-                    % end reached -> abort!
-                    motorX1.Stop('off');
-                    motorX2.Stop('off');
-                end
-            end
+            
+            motorX1.WaitFor(0, obj.nxtHandle1);
+            motorX2.WaitFor(0, obj.nxtHandle1);
 
         end
         
         % moves backwards and waits until it is finished
         function [motorX1 motorX2] = moveBackwardsW(obj, steps)
             [motorX1 motorX2] = obj.moveBackwards(steps);
-
-            data1 = motorX1.ReadFromNXT(obj.nxtHandles1);
-            data2 = motorX2.ReadFromNXT(obj.nxtHandles1);
-
-            while(data1.IsRunning && data2.IsRunning)
-                if(obj.reachedEnd())
-                    % end reached -> abort!
-                    motorX1.Stop('off');
-                    motorX2.Stop('off');
-                end
-            end
+            motorX1.WaitFor(0, obj.nxtHandle1);
+            motorX2.WaitFor(0, obj.nxtHandle1);
         end
         
         % moves forward asynchron

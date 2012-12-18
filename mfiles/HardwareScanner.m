@@ -39,7 +39,7 @@ classdef HardwareScanner < AbstractScanner
             
             while(y < 2000)
 
-                while(obj.hw.reachedEnd())
+                while(x < obj.maxStepsWidth)
 
                     image(x, y) = obj.hw.getBrightness1();
 
@@ -50,7 +50,7 @@ classdef HardwareScanner < AbstractScanner
                 obj.hw.moveForwardsW(step_y);
                 y = y + step_y;
 
-                while(obj.hw.reachedEnd())
+                while(x >= 0)
 
                     image(x, y) = obj.hw.getBrightness1();
 
