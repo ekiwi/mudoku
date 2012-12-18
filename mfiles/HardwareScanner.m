@@ -29,11 +29,6 @@ classdef HardwareScanner < AbstractScanner
         function scanCells(obj)
             disp('Scanning Cells...');
         end
-
-        function getCell(obj, x, y)
-            fprintf('Getting Cell @ %d,%d\n', x, y);
-        end
-
     end
 
 end

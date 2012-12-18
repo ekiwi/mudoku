@@ -23,6 +23,14 @@ classdef SoftwareScanner < AbstractScanner
                 obj.fileName = file;
             end
         end
+
+        function firstScan(obj)
+            %TODO: Load File
+        end
+
+        function scanCells(obj)
+            disp('Scanning cells ..... not really.');
+        end
     end
     
 end
