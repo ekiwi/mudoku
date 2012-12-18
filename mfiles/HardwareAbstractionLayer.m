@@ -236,24 +236,28 @@ classdef HardwareAbstractionLayer < handle
         end
         
         % moves to the left until end is reached
+        % TODO: Adjusting the offset (100)
         function motorY = moveToLeftLimit(obj)
-            while(~obj.reachedEnd())
-                motorY = obj.moveLeftW(20);
-            end
+            motorY = obj.moveLeft(0);
+            while(~obj.reachedEnd()) end
+            motorY.Stop('off', obj.nxtHandle1);
+            motorY = obj.moveRightW(100);
         end
         
         % moves to the right until end is reached
+        % TODO: Adjusting the offset (100)
         function motorY = moveToRightLimit(obj)
-            while(~obj.reachedEnd())
-                motorY = obj.moveRightW(20);
-            end
+            motorY = obj.moveRight(0);
+            while(~obj.reachedEnd()) end
+            motorY.Stop('off', obj.nxtHandle1);
+            motorY = obj.moveLeftW(100);
         end
         
         % calculates the max width steps which the sledge can move
         function calibrateSledge(obj)
-            moveToLeftLimit(obj);
+            obj.moveToRightLimit();
             
-            motorY = NXTMotor('C', 'Power', -20, 'TachoLimit', 0, 'SpeedRegulation', 1);
+            motorY = NXTMotor('C', 'Power', 50, 'TachoLimit', 0, 'SpeedRegulation', 1);
             motorY.ResetPosition(obj.nxtHandle1);
             
             data = motorY.ReadFromNXT(obj.nxtHandle1);
@@ -262,14 +266,14 @@ classdef HardwareAbstractionLayer < handle
             
             motorY.SendToNXT(obj.nxtHandle1);
             while(~obj.reachedEnd()) end
-            motorY.Stop('brake', obj.nxtHandle1);
+            motorY.Stop('off', obj.nxtHandle1);
             
             data = motorY.ReadFromNXT(obj.nxtHandle1);
             
             % Calculate the max step width (offset 14)
-            obj.maxStepsWidth = data.Position - start - 14; 
+            obj.maxStepsWidth = data.Position - start - 200; 
             
-            obj.moveLeftW(7);
+            obj.moveLeftW(100);
             
             % Setting the origin to [0 0]
             motorX = NXTMotor('AB');
