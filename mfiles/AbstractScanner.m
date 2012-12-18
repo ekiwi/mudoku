@@ -41,6 +41,15 @@ classdef AbstractScanner < handle
             load(fileName, 'c', '-mat');
             obj.cells = c;
         end
+
+        function [ x y ] = getNumCells(obj)
+            x = 0; y = 0;
+            if ~isempty(obj.cells)
+                s = size(obj.cells);
+                x = s(1);
+                y = s(2);
+            end
+        end
     end
 
     methods (Access = 'public')

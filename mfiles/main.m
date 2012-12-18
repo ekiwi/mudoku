@@ -31,8 +31,30 @@ else
     scanner.loadCells(filename);
 end
 
-%% Image Recognition
+[ width, height ] = scanner.getNumCells();
+fprintf('Scann done. Sudoku dimensions: %dx%d', width, height);
 
+if ~ask('Continue?', 'bool', 'yes')
+    error('aborted');
+end
+
+if ask('Do you want to save the cells?', 'bool', 'no')
+    filename = ask('Please provide a file name', 'string', defaultfile);
+    scanner.saveCells(filename);
+end
+
+%% Image Recognition
+sudoku = ones(width, height) * NaN;
+
+r = ImageRecognition;
+for x = 1:width
+    for y = 1:height
+        sudoku(x,y) = r.parseCell(scanner.getCell(x,y));
+    end
+end
+
+disp('Done with ImageRecognition.');
+disp_sudoku(sudoku);
 
 
 
@@ -42,6 +64,6 @@ end
 
 
 %% Draw Results
-if hal != 0
+if hal ~= 0
     disp('Using real hardware -> draw results');
 end
