@@ -6,3 +6,6 @@
 
 # cell save files #
 *.cells
+
+# Whatever this is: #
+.DS_Store
