@@ -48,7 +48,7 @@ classdef HardwareAbstractionLayer < handle
                 power = -power;
             end
             
-            motorObj = NXTMotor(port, 'Power', floor(power), 'TachoLimit', floor(abs(steps)), 'SpeedRegulation', 1);
+            motorObj = NXTMotor(port, 'Power', floor(power), 'ActionAtTachoLimit', 'brake', 'TachoLimit', floor(abs(steps)), 'SpeedRegulation', 0);
             
         end
 
@@ -136,31 +136,31 @@ classdef HardwareAbstractionLayer < handle
         
         % moves right asynchron
         function motorY = moveRight(obj, steps)
-            motorY = obj.createMotorObj('C', 20, steps);
+            motorY = obj.createMotorObj('C', -100, steps);
             motorY.SendToNXT(obj.nxtHandle1);
         end
         
         
         % moves left asynchron
         function motorY = moveLeft(obj, steps)
-            motorY = obj.createMotorObj('C', -20, steps);
+            motorY = obj.createMotorObj('C', 100, steps);
             motorY.SendToNXT(obj.nxtHandle1);
         end
         
         % moves right and waits until it is finished
         function motorY = moveRightW(obj, steps)
-            motorY = obj.createMotorObj('C', 20, steps);
+            motorY = obj.createMotorObj('C', -100, steps);
             
             motorY.SendToNXT(obj.nxtHandle1);
-            motorY.WaitFor(0);
+            motorY.WaitFor(0, obj.nxtHandle1);
         end
         
         % moves left and waits until it is finished
         function motorY = moveLeftW(obj, steps)
-            motorY = obj.createMotorObj('C', -20, steps);
+            motorY = obj.createMotorObj('C', 100, steps);
             
             motorY.SendToNXT(obj.nxtHandle1);
-            motorY.WaitFor(0);
+            motorY.WaitFor(0, obj.nxtHandle1);
         end
         %% end
         
@@ -169,31 +169,50 @@ classdef HardwareAbstractionLayer < handle
         %% START: Move in X-Dir
         
         % moves forward and waits until it is finished
-        function motorX = moveForwardsW(obj, steps)
+        function [motorX1 motorX2] = moveForwardsW(obj, steps)
             [motorX1 motorX2] = obj.moveForwards(steps);
-            motorX1.WaitFor(0);
-            motorX2.WaitFor(0);
+
+            data1 = motorX1.ReadFromNXT(obj.nxtHandles1);
+            data2 = motorX2.ReadFromNXT(obj.nxtHandles1);
+
+            while(data1.IsRunning && data2.IsRunning)
+                if(obj.reachedEnd())
+                    % end reached -> abort!
+                    motorX1.Stop('off');
+                    motorX2.Stop('off');
+                end
+            end
+
         end
         
         % moves backwards and waits until it is finished
-        function motorX = moveBackwardsW(obj, steps)
+        function [motorX1 motorX2] = moveBackwardsW(obj, steps)
             [motorX1 motorX2] = obj.moveBackwards(steps);
-            motorX1.WaitFor(0);
-            motorX2.WaitFor(0);
+
+            data1 = motorX1.ReadFromNXT(obj.nxtHandles1);
+            data2 = motorX2.ReadFromNXT(obj.nxtHandles1);
+
+            while(data1.IsRunning && data2.IsRunning)
+                if(obj.reachedEnd())
+                    % end reached -> abort!
+                    motorX1.Stop('off');
+                    motorX2.Stop('off');
+                end
+            end
         end
         
         % moves forward asynchron
         function [motorX1 motorX2] = moveForwards(obj, steps)
-            motorX1 = obj.createMotorObj('A', -20, steps);
-            motorX2 = obj.createMotorObj('B', -20, steps);
+            motorX1 = obj.createMotorObj('A', -100, steps);
+            motorX2 = obj.createMotorObj('B', -100, steps);
             motorX1.SendToNXT(obj.nxtHandle1);
             motorX2.SendToNXT(obj.nxtHandle1);
         end
         
         % moves backward asynchron
         function [motorX1 motorX2] = moveBackwards(obj, steps)
-            motorX1 = obj.createMotorObj('A', 20, steps);
-            motorX2 = obj.createMotorObj('B', 20, steps);
+            motorX1 = obj.createMotorObj('A', 100, steps);
+            motorX2 = obj.createMotorObj('B', 100, steps);
             motorX1.SendToNXT(obj.nxtHandle1);
             motorX2.SendToNXT(obj.nxtHandle1);
         end
@@ -207,8 +226,8 @@ classdef HardwareAbstractionLayer < handle
         % returns 1 when end is reached
         % returns 0 when end is not reached
         function ans = reachedEnd(obj)
-            state1 = GetSwitch(SENSOR_1, nxtHandle2);
-            state2 = GetSwitch(SENSOR_2, nxtHandle2);
+            state1 = GetSwitch(SENSOR_1, obj.nxtHandle2);
+            state2 = GetSwitch(SENSOR_2, obj.nxtHandle2);
             if(state1 || state2)
                 ans = 1;
             else
@@ -219,14 +238,14 @@ classdef HardwareAbstractionLayer < handle
         % moves to the left until end is reached
         function motorY = moveToLeftLimit(obj)
             while(~obj.reachedEnd())
-                motorY = obj.moveLeftW(1);
+                motorY = obj.moveLeftW(20);
             end
         end
         
         % moves to the right until end is reached
         function motorY = moveToRightLimit(obj)
             while(~obj.reachedEnd())
-                motorY = obj.moveRightW(1);
+                motorY = obj.moveRightW(20);
             end
         end
         
@@ -234,16 +253,16 @@ classdef HardwareAbstractionLayer < handle
         function calibrateSledge(obj)
             moveToLeftLimit(obj);
             
-            motorY = NXTMotor('C', 'Power', 10, 'TachoLimit', 0, 'SpeedRegulation', 1);
+            motorY = NXTMotor('C', 'Power', -20, 'TachoLimit', 0, 'SpeedRegulation', 1);
             motorY.ResetPosition(obj.nxtHandle1);
             
             data = motorY.ReadFromNXT(obj.nxtHandle1);
             
             start = data.Position;
             
-            motorY.SendToNXT();
+            motorY.SendToNXT(obj.nxtHandle1);
             while(~obj.reachedEnd()) end
-            motorY.Stop('brake');
+            motorY.Stop('brake', obj.nxtHandle1);
             
             data = motorY.ReadFromNXT(obj.nxtHandle1);
             
@@ -262,6 +281,7 @@ classdef HardwareAbstractionLayer < handle
         
         
         %% START: Positioning
+        % gets the current position from the motors 
         function [x y] = getPosition(obj)
                 motorY = NXTMotor('C');
                 data = motorY.ReadFromNXT(obj.nxtHandle1);
@@ -273,12 +293,12 @@ classdef HardwareAbstractionLayer < handle
         
         % moves to a specific location
         function moveToXY(obj, x, y)
-            pos = getPosition(obj);
+            pos = obj.getPosition();
             steps = pos - [x y];
-            m1 = moveRight(x);
-            m2 = moveForward(y);
-            m1.WaitFor(0);
-            m2.WaitFor(0);
+            m1 = obj.moveRight(steps(1));
+            m2 = obj.moveForward(steps(2));
+            m1.WaitFor(0, obj.nxtHandle1);
+            m2.WaitFor(0, obj.nxtHandle1);
         end
         %% end
         

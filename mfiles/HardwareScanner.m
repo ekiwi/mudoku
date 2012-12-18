@@ -22,8 +22,49 @@ classdef HardwareScanner < AbstractScanner
             obj.hw = hal;
         end
 
+        
+
         function firstScan(obj)
             disp('First Scan...');
+
+            % begin at [0 0]
+            obj.hw.moveToXY(0, 0);
+
+            x = 0;
+            step_x = 20;
+            y = 0;
+            step_y = 20;
+
+            image = [];
+            
+            while(y < 2000)
+
+                while(obj.hw.reachedEnd())
+
+                    image(x, y) = obj.hw.getBrightness1();
+
+                    obj.hw.moveRightW(step_x);
+                    x = x+step_x;
+                end
+
+                obj.hw.moveForwardsW(step_y);
+                y = y + step_y;
+
+                while(obj.hw.reachedEnd())
+
+                    image(x, y) = obj.hw.getBrightness1();
+
+                    obj.hw.moveLeftW(step_x);
+                    x = x-step_x;
+                end
+
+                obj.hw.moveForwardsW(step_y);
+                y = y + step_y;
+            end
+
+            image
+            imshow(image);
+
         end
 
         function scanCells(obj)

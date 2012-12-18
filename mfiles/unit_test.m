@@ -1,4 +1,4 @@
-%% Setuop Unit Tests
+%% Setup Unit Tests
 clear all; % clear workspace
 
 
