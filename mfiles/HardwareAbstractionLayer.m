@@ -4,6 +4,7 @@ classdef HardwareAbstractionLayer < handle
     % 
     % Syntax
     %   
+    % Syntax 
     %
     % Description
     %
