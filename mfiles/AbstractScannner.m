@@ -4,8 +4,8 @@ classdef AbstractScannner
     %   with real hardware or by reading a file
     
     methods (Abstract)
-        firstScan(hw)
-        scanCells(hw)
+        firstScan(varargin)
+        scanCells(varargin)
         img_matrix = getCell(x,y)
     end
     
