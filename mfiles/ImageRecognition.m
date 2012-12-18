@@ -24,7 +24,7 @@ classdef ImageRecognition
     
     methods
                 
-        function number = parseCell(img_matrix)
+        function number = parseCell(obj, img_matrix)
             
         end
         

@@ -11,16 +11,16 @@ classdef HardwareScanner < AbstractScanner
             obj.hw = hal;
         end
 
-        function firstScan(varargin)
+        function firstScan(obj)
             disp('First Scan...');
         end
 
-        function scanCells(varargin)
+        function scanCells(obj)
             disp('Scanning Cells...');
         end
 
-        function getCell(x,y)
-            disp('Getting Cell Content');
+        function getCell(obj, x, y)
+            fprintf('Getting Cell @ %d,%d\n', x, y);
         end
 
     end
