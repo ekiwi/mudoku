@@ -20,10 +20,6 @@ classdef HardwareAbstractionLayer < handle
     
     properties (Access = 'private')
         
-        motorX1 = 0;
-        motorX2 = 0;
-        motorY = 0;
-        motorZ = 0;
         
         % nxt1 -> Motor (AB->x, C->y)
         %         SENSOR_1->left Sensor
@@ -32,15 +28,21 @@ classdef HardwareAbstractionLayer < handle
         % nxt2 -> Motor (A->z, B->Lamp1, C->Lamp2)
         %         SENSOR_1->pressureLeft, 
         %         SENSOR_2->pressureRight)
-        
+
         lamp1 = 0;
         lamp2 = 0;
     end
     
     properties (Access = 'public')
+        
+        motorX1 = 0;
+        motorX2 = 0;
+        motorY = 0;
+        motorZ = 0;
+
         nxtHandle1 = 0;
         nxtHandle2 = 0;
-        maxStepsWidth = 0;   % the max amount of steps which the sledge can move
+        maxStepsWidth = 1500;   % the max amount of steps which the sledge can move
     end
     
     methods (Access = 'private')
@@ -51,7 +53,7 @@ classdef HardwareAbstractionLayer < handle
                 power = -power;
             end
             
-            obj.motorY.Steps = floor(abs(steps));
+            obj.motorY.TachoLimit = floor(abs(steps));
             obj.motorY.Power = floor(power);
         end
         
@@ -61,9 +63,9 @@ classdef HardwareAbstractionLayer < handle
                 power = -power;
             end
             
-            obj.motorX1.Steps = floor(abs(steps));
+            obj.motorX1.TachoLimit = floor(abs(steps));
             obj.motorX1.Power = floor(power);
-            obj.motorX2.Steps = floor(abs(steps));
+            obj.motorX2.TachoLimit = floor(abs(steps));
             obj.motorX2.Power = floor(power);
         end
         
@@ -73,7 +75,7 @@ classdef HardwareAbstractionLayer < handle
                 power = -power;
             end
             
-            obj.motorZ.Steps = floor(abs(steps));
+            obj.motorZ.TachoLimit = floor(abs(steps));
             obj.motorZ.Power = floor(power);
         end
     end
@@ -84,19 +86,20 @@ classdef HardwareAbstractionLayer < handle
         % constructor
         function obj = HardwareAbstractionLayer(varargin)
             COM_CloseNXT('all');
+
             obj.nxtHandle1 = COM_OpenNXTEx('USB','00165311BC5D');
             obj.nxtHandle2 = COM_OpenNXTEx('USB','00165302F03F');
             
             OpenSwitch(SENSOR_1, obj.nxtHandle2);
             
+            OpenLight(SENSOR_1, 'ACTIVE', obj.nxtHandle1);
+            OpenLight(SENSOR_2, 'ACTIVE', obj.nxtHandle1);
+            OpenLight(SENSOR_3, 'ACTIVE', obj.nxtHandle1);
+
             obj.motorX1 = NXTMotor('A', 'SpeedRegulation', 1);
             obj.motorX2 = NXTMotor('B', 'SpeedRegulation', 1);
             obj.motorY = NXTMotor('C');
             obj.motorZ = NXTMotor('A');
-            
-            OpenLight(SENSOR_1, 'ACTIVE', obj.nxtHandle1);
-            OpenLight(SENSOR_2, 'ACTIVE', obj.nxtHandle1);
-            OpenLight(SENSOR_3, 'ACTIVE', obj.nxtHandle1);
         end
         
         % destructor
@@ -178,16 +181,14 @@ classdef HardwareAbstractionLayer < handle
         
         % moves right and waits until it is finished
         function moveRightW(obj, steps)
-            obj.setMotorY(steps, -50);            
-            obj.motorY.SendToNXT(obj.nxtHandle1);
-            obj.motorY.WaitFor(obj.nxtHandle1);
+            obj.moveRight(steps);
+            obj.motorY.WaitFor(0, obj.nxtHandle1);
         end
         
         % moves left and waits until it is finished
         function moveLeftW(obj, steps)
-            obj.setMotorY(steps, 50);            
-            obj.motorY.SendToNXT(obj.nxtHandle1);
-            obj.motorY.WaitFor(obj.nxtHandle1);
+            obj.moveLeft(steps);
+            obj.motorY.WaitFor(0, obj.nxtHandle1);
         end
         %% end
         
@@ -213,14 +214,14 @@ classdef HardwareAbstractionLayer < handle
         
         % moves forward asynchron
         function moveForwards(obj, steps)
-            obj.setMotorX(steps, -50);       
+            obj.setMotorX(steps, -25);       
             obj.motorX1.SendToNXT(obj.nxtHandle1);
             obj.motorX2.SendToNXT(obj.nxtHandle1);
         end
         
         % moves backward asynchron
         function moveBackwards(obj, steps)
-            obj.setMotorX(steps, 50);       
+            obj.setMotorX(steps, 25);       
             obj.motorX1.SendToNXT(obj.nxtHandle1);
             obj.motorX2.SendToNXT(obj.nxtHandle1);
         end
@@ -242,11 +243,15 @@ classdef HardwareAbstractionLayer < handle
             obj.moveLeft(0);
             while(~obj.reachedEnd()) end
             obj.motorY.Stop('off', obj.nxtHandle1);
+
+            obj.motorY.ResetPosition(obj.nxtHandle1);
+
         end
 
         
         function moveMaxRight(obj)
-            steps = obj.maxStepsWidth - obj.getPosition(1);
+            pos = obj.getPosition();
+            steps = obj.maxStepsWidth - pos(1);
             obj.moveRight(steps);
         end
         
@@ -254,7 +259,7 @@ classdef HardwareAbstractionLayer < handle
         function calibrateSledge(obj)
             
             obj.motorY.ResetPosition(obj.nxtHandle1);
-            obj.setMotorY(0, -50);
+            obj.setMotorY(0, 25);
             
             data = obj.motorY.ReadFromNXT(obj.nxtHandle1);
             
@@ -269,6 +274,7 @@ classdef HardwareAbstractionLayer < handle
             % Calculate the max step width (offset 14)
             obj.maxStepsWidth = abs(data.Position - start); 
             
+            pause(1);
             
             % Setting the origin to [0 0]
             obj.motorX1.ResetPosition(obj.nxtHandle1);
@@ -283,10 +289,14 @@ classdef HardwareAbstractionLayer < handle
         function [x y] = getPosition(obj)
             
                 data = obj.motorY.ReadFromNXT(obj.nxtHandle1);
-            y = data.Position;
+            y = abs(data.Position);
 
                 data = obj.motorX1.ReadFromNXT(obj.nxtHandle1);
-            x = data.Position;
+            x1 = -data.Position;
+                data = obj.motorX2.ReadFromNXT(obj.nxtHandle1);
+            x2 = -data.Position;
+
+            x = 0.5*(x1+x2);
 
         end
         
@@ -294,11 +304,23 @@ classdef HardwareAbstractionLayer < handle
         function moveToXY(obj, x, y)
 
             [x_old, y_old] = obj.getPosition();
-            steps = [x_old, y_old] - [x, y];
-            m1 = obj.moveRight(steps(1));
-            m2 = obj.moveForwards(steps(2));
-            m1.WaitFor(0, obj.nxtHandle1);
-            m2.WaitFor(0, obj.nxtHandle1);
+
+            x_old = floor(x_old);
+            y_old = floor(y_old);
+            x = floor(x);
+            y = floor(y);
+
+            if( x~=x_old)
+                obj.moveForwards( x-x_old );
+            end
+            if(y ~= y_old)
+                obj.moveRight( y-y_old );
+            end
+
+
+            obj.motorX1.WaitFor(0, obj.nxtHandle1);
+            obj.motorX2.WaitFor(0, obj.nxtHandle1);
+            obj.motorY.WaitFor(0, obj.nxtHandle1);
 
         end
         %% end
