@@ -55,6 +55,12 @@ function MainGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for MainGUI
 handles.output = hObject;
 
+% Save Custom Function Pointer
+handles.showProgress = @showProgress;
+handles.showImage = @showImage;
+handles.showSudoku = @showSudoku;
+
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -152,3 +158,24 @@ function pushbutton9_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+%% START: Custom Callback functions
+
+% shows progress in the proress bar
+function showProgress(handles, step, progress)
+disp('showProgress was called');
+
+
+% draws a 2d greyscale image onto the main drawing area
+function showImage(handles, image)
+disp('showImage was called');
+
+
+
+% draws a sudoku onto the main drawing area
+function showSudoku(handles, sudoku)
+disp('showSudoku was called');
+
+
+
+%% end

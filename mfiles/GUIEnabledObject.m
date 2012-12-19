@@ -5,7 +5,7 @@ classdef GUIEnabledObject < handle
     
     properties (Access = 'private')
         guiHandles = 0;
-        updateProgress_Handle = 0;
+        showProgress_Handle = 0;
         showImage_Handle = 0;
         showSudoku_Handle = 0;
     end
@@ -13,39 +13,37 @@ classdef GUIEnabledObject < handle
     methods (Access = 'public')
         % connects Object to GUI
         % parameters are:
-        %   * handles: GUI handles handle
-        %   * updateprog: updateProgress(handles, step, progress) handle
-        %   * showimg: showImage(handles, 2d_matrix) handle
-        %   * showsudoku: showSudoku(hanles, 9x9_matrix) handle
-        function connectGUI(obj, handles, updateprog, showimg, showsudoku)
+        %   * handles: GUI handles handle they need to contain handles to
+        %              the following functions:
+        %   * showeProgress(handles, step, progress) handle
+        %   * showImage(handles, 2d_matrix) handle
+        %   * showSudoku(hanles, 9x9_matrix) handle
+        function connectGUI(obj, handles)
             obj.guiHandles = handles;
-            obj.updateProgress_Handle = updateprog;
-            obj.showImage_Handle = showimg;
-            obj.showSudoku_Handle = showsudoku;
+            obj.showProgress_Handle = handles.showProgress;
+            obj.showImage_Handle = handles.showImage;
+            obj.showSudoku_Handle = handles.showSudoku;
         end
     end
     
-    methods (Access = 'protected')
-        function updateProgress(obj, step, progress)
-            if obj.updateProgress_Handle == 0
-                error('updateProgress handle not set. You need to call',...
-                    'connectGUI first!');
+    methods (Access = 'public')
+        function showProgress(obj, step, progress)
+            if ~isa(obj.showProgress_Handle, 'function_handle')
+                error('updateProgress handle not set. You need to call connectGUI first!');
             end
-            obj.updateProgress_Handle(obj.guiHandles, step, progress);
+            obj.showProgress_Handle(obj.guiHandles, step, progress);
         end
 
         function showImage(obj, image)
-            if obj.updateProgress_Handle == 0
-                error('updateProgress handle not set. You need to call',...
-                    'connectGUI first!');
+            if ~isa(obj.showImage_Handle, 'function_handle')
+                error('updateProgress handle not set. You need to call connectGUI first!');
             end
             obj.showImage_Handle(obj.guiHandles, image);
         end
 
         function showSudoku(obj, sudoku)
-            if obj.updateProgress_Handle == 0
-                error('updateProgress handle not set. You need to call',...
-                    'connectGUI first!');
+            if ~isa(obj.showSudoku_Handle, 'function_handle')
+                error('updateProgress handle not set. You need to call connectGUI first!');
             end
             obj.showSudoku_Handle(obj.guiHandles, sudoku);
         end
