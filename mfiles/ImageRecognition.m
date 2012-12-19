@@ -23,9 +23,51 @@ classdef ImageRecognition
     end
     
     methods
-                
+        
         function number = parseCell(obj, img_matrix)
-            
+            addpath('OCR');
+            warning off
+            I = mat2gray(img_matrix);
+            imagen=I;
+            % Convert to BW
+            threshold = graythresh(imagen);
+            imagen =~im2bw(imagen,threshold);
+            % Remove all object containing fewer than 30 pixels
+            imagen = bwareaopen(imagen,30);
+            %Storage matrix word from image
+            word=[ ];
+            re=imagen;
+            % Load templates
+            load templates
+            global templates
+            % Compute the number of letters in template file
+            num_letras=size(templates,2);
+            while 1
+                %Fcn 'lines' separate lines in text
+                [fl re]=lines(re);
+                imgn=fl;
+                %-----------------------------------------------------------------
+                % Label and count connected components
+                [L Ne] = bwlabel(imgn);
+                for n=1:Ne
+                    [r,c] = find(L==n);
+                    % Extract letter
+                    n1=imgn(min(r):max(r),min(c):max(c));
+                    % Resize letter (same size of template)
+                    img_r=imresize(n1,[42 24]);
+                    %-------------------------------------------------------------------
+                    % Call fcn to convert image to text
+                    letter=read_letter(img_r,num_letras);
+                    % Letter concatenation
+                    word=[word letter];
+                end
+                %*When the sentences finish, breaks the loop
+                if isempty(re)  %See variable 're' in Fcn 'lines'
+                    break
+                end
+                
+            end
+            number = str2num(word);
         end
         
     end

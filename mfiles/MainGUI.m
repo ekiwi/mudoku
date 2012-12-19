@@ -55,6 +55,18 @@ function MainGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for MainGUI
 handles.output = hObject;
 
+% Save Custom Function Pointer
+handles.showProgress = @showProgress;
+handles.showImage = @showImage;
+handles.showSudoku = @showSudoku;
+
+% set progress axis size
+s = [0,1,0,1];
+axis(handles.progress1, s);
+axis(handles.progress2, s);
+axis(handles.progress3, s);
+axis(handles.progress4, s);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -152,3 +164,68 @@ function pushbutton9_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+%% START: Custom Callback functions
+
+% shows progress in the proress bar
+function showProgress(handles, step, progress)
+lbl(1) = handles.progresslbl1;
+lbl(2) = handles.progresslbl2;
+lbl(3) = handles.progresslbl3;
+lbl(4) = handles.progresslbl4;
+can(1) = handles.progress1;
+can(2) = handles.progress2;
+can(3) = handles.progress3;
+can(4) = handles.progress4;
+
+for ii = 1:4
+    if ii < step || (progress == 1.0 && ii == step)
+        drawProgress(can(ii), lbl(ii), 1.0, [0 0.5 0]);
+    elseif ii == step
+        drawProgress(can(ii), lbl(ii), progress, [1 0.5 0]);
+    else
+        drawProgress(can(ii), lbl(ii), 0, [0.5 0 0]);
+    end
+end
+
+
+% show progress helper function
+function drawProgress(canvas, lbl, progress, color)
+set(lbl, 'String', sprintf('%d%%', int32(progress * 100)));
+cla(canvas);
+if progress > 0
+    rectangle('Position', [0,0.1,progress,0.8], 'Parent', canvas,...
+        'FaceColor', color);
+end
+
+
+
+
+% draws a 2d greyscale image onto the main drawing area
+function showImage(handles, image)
+disp('showImage was called');
+
+
+
+% draws a sudoku onto the main drawing area
+function showSudoku(handles, sudoku)
+axes(handles.drawingArea);
+
+set(handles.drawingArea, 'XGrid', 'on');
+set(handles.drawingArea, 'YGrid', 'on');
+set(handles.drawingArea, 'GridLineStyle', '-');
+title(handles.drawingArea, 'SUDOKU');
+axis(handles.drawingArea, [0,9,0,9]);
+ 
+for x=1:9
+    for y=1:9
+        if(sudoku(x,y)~=0)
+            t=text(-1+y+0.5,9-x+0.5,num2str(sudoku(x,y)), 'Parent',handles.drawingArea);
+            set(t,'FontSize',15);
+        end
+    end
+end
+
+
+
+%% end
