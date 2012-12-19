@@ -8,7 +8,6 @@ function [X]=Solve_Sudoku(X)
    end
    % Return for impossible puzzles.
    if ~isempty(e)
-      disp('No Solution');
       return;
    end
    % Recursive backtracking.
