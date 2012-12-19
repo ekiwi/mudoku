@@ -60,6 +60,7 @@ classdef AbstractScanner < handle
 
     methods (Abstract)
         firstScan(obj)
+        secondScan(obj)
         scanCells(obj)
     end
 

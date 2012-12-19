@@ -89,7 +89,7 @@ classdef HardwareScanner < AbstractScanner
             
         end
         
-        % Scales the X-Values, Y-Values, Brightness-Values
+        % Scales and (Rounds) the X-Values, Y-Values, Brightness-Values
         % Returns the rawImageData which contains the updated data
         % Also includes the xScale, xMin and yScale, yMin values:
         %   x_new * xScale + xMin = x_old
@@ -154,6 +154,7 @@ classdef HardwareScanner < AbstractScanner
             end
             
         end
+        
     end
     
     methods
@@ -161,10 +162,33 @@ classdef HardwareScanner < AbstractScanner
             obj.hw = hal;
         end
 
+        % Do the first scan
         function firstScan(obj)
             disp('First Scan...');
+            
+            % Scan a small area (there have to be at least one soduko box)
+            rawImageData = obj.scanArea(0,0,300, 300, 50);
+            
+            [imageData xScale xMin yScale yMin] = scaleRawImageData(rawImageData, 200, 100);
+            
+            grayRawImage = createGrayImageFromRawData(imageData);
+            
+            figure(1); imshow(uint8(grayRawImage));
+            
+            % Now do some filtering...
+            
+            % extract start point of soduko
+            
+            % extract size of box
+            
+            % Test-IDEA: Move to a specific box
+            
+            
         end
 
+        
+        
+        % Do the second scan
         function secondScan(obj)
             disp('Second Scan...');
             
@@ -174,44 +198,10 @@ classdef HardwareScanner < AbstractScanner
             
             grayRawImage = createGrayImageFromRawData(imageData);
             
+            figure(1); imshow(uint8(grayRawImage));
             
+            % Now do some filtering...
             
-            minBright = min(image(3,:));
-            maxBright = max(image(3,:));
-            image(3,:) = (image(3,:)-minBright) ./ (maxBright-minBright) .* 255;
-
-            maxX = max(image(1,:));
-            minX = min(image(1,:));
-            maxY = max(image(2,:));
-            minY = min(image(2,:));
-
-            xResolution = 200;
-            yResolution = 200;
-
-            image(1,:) = (image(1,:) - minX) ./ (maxX-minX) .* (xResolution-1)+1;
-            image(2,:) = (image(2,:) - minY) ./ (maxY-minY) .* (yResolution-1)+1;
-
-            imageMatrix = ones(xResolution+1, yResolution+1)*NaN;
-
-            figure(2);
-            hold on;
-            plot(image(1,:),image(2,:));
-            image(1,:) = round(image(1,:));
-            image(2,:) = round(image(2,:));
-            plot(image(1,:),image(2,:));
-
-            for i=1:length(image(1,:))
-                x = image(1,i);
-                y = image(2,i);
-                if(isnan(imageMatrix(x, y)))
-                    imageMatrix(x, y) = image(3, i);
-                else
-                    imageMatrix(x, y) = 0.5*(imageMatrix(x, y)+image(3, i));
-                end
-            end
-
-            figure(3);
-
             for x=1:xResolution
                 for y=2:yResolution
                     if(isnan(imageMatrix(x, y)))
@@ -227,48 +217,9 @@ classdef HardwareScanner < AbstractScanner
                     end
                 end
             end
+            figure(2); imshow(uint8(grayRawImage));
 
-            imshow(uint8(imageMatrix))
 
-
-            ableitungH = diff(imageMatrix);
-            ableitungV = diff(imageMatrix');
-            
-
-%             negativeValues = find(image(1,:)<0);
-%             image(:, negativeValues) = zeros( [3,length(negativeValues)]);
-% 
-%             matrix2D
-% 
-%             numXY = length(image(3,:));
-% 
-%             maxX = max(image(1,:));
-%             maxY = max(image(2,:));
-% 
-%             imageMatrix = [];
-% 
-%             for x=1:maxX
-%                 sameX = find(image(1,:) == x);    
-%                 [r c] = size(sameX);    
-%                 if(c == 0 && r == 0)
-%                     continue;
-%                 end
-%                 
-%                 buffer1 = image(:,sameX);
-%                 for y=1:maxY
-%                     sameY = find(buffer1(2,:) == y);
-%                     [r c] = size(sameY);    
-%                     if(c == 0 && r == 0)
-%                         imageMatrix(x, buffer1(2,:)) = buffer1(3,:);
-%                     else
-%                         buffer2 = image(:, sameY);  
-%                         color = mean(buffer2(3,:));
-%                         imageMatrix(x, y) = color;
-%                     end
-%                 end
-%             end
-% 
-%             imshow(imageMatrix);
 
         end
 
