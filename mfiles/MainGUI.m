@@ -60,6 +60,12 @@ handles.showProgress = @showProgress;
 handles.showImage = @showImage;
 handles.showSudoku = @showSudoku;
 
+% set progress axis size
+s = [0,1,0,1];
+axis(handles.progress1, s);
+axis(handles.progress2, s);
+axis(handles.progress3, s);
+axis(handles.progress4, s);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -163,7 +169,36 @@ function pushbutton9_Callback(hObject, eventdata, handles)
 
 % shows progress in the proress bar
 function showProgress(handles, step, progress)
-disp('showProgress was called');
+lbl(1) = handles.progresslbl1;
+lbl(2) = handles.progresslbl2;
+lbl(3) = handles.progresslbl3;
+lbl(4) = handles.progresslbl4;
+can(1) = handles.progress1;
+can(2) = handles.progress2;
+can(3) = handles.progress3;
+can(4) = handles.progress4;
+
+for ii = 1:4
+    if ii < step || (progress == 1.0 && ii == step)
+        drawProgress(can(ii), lbl(ii), 1.0, [0 0.5 0]);
+    elseif ii == step
+        drawProgress(can(ii), lbl(ii), progress, [1 0.5 0]);
+    else
+        drawProgress(can(ii), lbl(ii), 0, [0.5 0 0]);
+    end
+end
+
+
+% show progress helper function
+function drawProgress(canvas, lbl, progress, color)
+set(lbl, 'String', sprintf('%d%%', int32(progress * 100)));
+cla(canvas);
+if progress > 0
+    rectangle('Position', [0,0.1,progress,0.8], 'Parent', canvas,...
+        'FaceColor', color);
+end
+
+
 
 
 % draws a 2d greyscale image onto the main drawing area
