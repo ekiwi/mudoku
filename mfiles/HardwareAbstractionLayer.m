@@ -119,6 +119,17 @@ classdef HardwareAbstractionLayer < handle
             COM_CloseNXT('all');
         end
         
+        %% START: Pencil-Control
+        function putPenDown(obj)
+            obj.setMotorZ(3, 3);
+            obj.motorZ.SendToNXT(obj.nxtHandle2);
+        end
+        function pickPenUp(obj)
+            obj.setMotorZ(3, -3);
+            obj.motorZ.SendToNXT(obj.nxtHandle2);
+        end
+        %% end
+        
         
         %% START: Lamps
         
