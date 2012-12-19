@@ -174,7 +174,22 @@ disp('showImage was called');
 
 % draws a sudoku onto the main drawing area
 function showSudoku(handles, sudoku)
-disp('showSudoku was called');
+axes(handles.drawingArea);
+
+set(handles.drawingArea, 'XGrid', 'on');
+set(handles.drawingArea, 'YGrid', 'on');
+set(handles.drawingArea, 'GridLineStyle', '-');
+title(handles.drawingArea, 'SUDOKU');
+axis(handles.drawingArea, [0,9,0,9]);
+ 
+for x=1:9
+    for y=1:9
+        if(sudoku(x,y)~=0)
+            t=text(-1+y+0.5,9-x+0.5,num2str(sudoku(x,y)), 'Parent',handles.drawingArea);
+            set(t,'FontSize',15);
+        end
+    end
+end
 
 
 
