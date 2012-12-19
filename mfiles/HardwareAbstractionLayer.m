@@ -28,14 +28,13 @@ classdef HardwareAbstractionLayer < handle
         %         SENSOR_1->pressureLeft, 
         %         SENSOR_2->pressureRight)
         
-        nxtHandle1 = 0;
-        nxtHandle2 = 0;
-        
         lamp1 = 0;
         lamp2 = 0;
     end
     
     properties (Access = 'public')
+        nxtHandle1 = 0;
+        nxtHandle2 = 0;
         maxStepsWidth = 0;   % the max amount of steps which the sledge can move
     end
     

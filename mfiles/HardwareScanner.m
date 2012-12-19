@@ -26,41 +26,49 @@ classdef HardwareScanner < AbstractScanner
 
         function firstScan(obj)
             disp('First Scan...');
+            
+            sensorThickness = 50;
+            xResulutionFaktor = 0.2;
+            yLength = 20000;
+            
+            image = [];
 
             % begin at [0 0]
             obj.hw.moveToXY(0, 0);
+            pos = [0 0];
 
-            x = 0;
-            step_x = 20;
-            y = 0;
-            step_y = 20;
-
-            image = [];
+            while(pos(1)<obj.hw.maxStepsWidth && ~obj.hw.reachedEnd())
             
-            while(y < 2000)
+                [motorX1 motorX2] = obj.hw.moveForwards(0);
 
-                while(x < obj.maxStepsWidth)
-
-                    image(x, y) = obj.hw.getBrightness1();
-
-                    obj.hw.moveRightW(step_x);
-                    x = x+step_x;
+                while(pos(2)<yLength)
+                    pos = obj.hw.getPosition(); 
+                    image(pos(1), pos(2)) = obj.hw.getBrightness1();
+                    image(pos(1)+sensorThickness, pos(2)) = obj.hw.getBrightness2();
+                    image(pos(1)+sensorThickness*2, pos(2)) = obj.hw.getBrightness3();
                 end
+                motorX1.Stop('brake', obj.hw.nxtHandle1);
+                motorX2.Stop('brake', obj.hw.nxtHandle1);
 
-                obj.hw.moveForwardsW(step_y);
-                y = y + step_y;
+                obj.hw.moveRightW(sensorThickness*xResulutionFaktor);
+                pos = obj.hw.getPosition();
 
-                while(x >= 0)
+                [motorX1 motorX2] = obj.hw.moveBackwards(0);
 
-                    image(x, y) = obj.hw.getBrightness1();
-
-                    obj.hw.moveLeftW(step_x);
-                    x = x-step_x;
+                while(pos(2)>=0)
+                    pos = obj.hw.getPosition(); 
+                    image(pos(1), pos(2)) = obj.hw.getBrightness1();
+                    image(pos(1)+sensorThickness, pos(2)) = obj.hw.getBrightness2();
+                    image(pos(1)+sensorThickness*2, pos(2)) = obj.hw.getBrightness3();
                 end
+                motorX1.Stop('brake', obj.hw.nxtHandle1);
+                motorX2.Stop('brake', obj.hw.nxtHandle1);
 
-                obj.hw.moveForwardsW(step_y);
-                y = y + step_y;
+                obj.hw.moveRightW(sensorThickness*xResulutionFaktor);
+                pos = obj.hw.getPosition();
+            
             end
+            
 
             image
             imshow(image);
