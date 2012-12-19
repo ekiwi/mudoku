@@ -28,7 +28,7 @@ classdef HardwareScanner < AbstractScanner
             disp('First Scan...');
             
             sensorThickness = 370;
-            yResulutionFaktor = 0.1;    % how many lines between one sensor are scanned 1/1
+            yResulutionFaktor = 0.08;    % how many lines between one sensor are scanned 1/1
             xLength = 100;
                      
             image = [];
@@ -47,8 +47,8 @@ classdef HardwareScanner < AbstractScanner
                     x = x+1; y = y+1;
 
                     image = [image, [x; y; obj.hw.getBrightness1()]];
-                    image = [image, [x+sensorThickness; y; obj.hw.getBrightness2()]];
-                    image = [image, [x+sensorThickness*2; y; obj.hw.getBrightness3()]];
+%                     image = [image, [x; y+sensorThickness; obj.hw.getBrightness2()]];
+%                     image = [image, [x; y+sensorThickness*2; obj.hw.getBrightness3()]];
                 end
                 obj.hw.motorX1.Stop('brake', obj.hw.nxtHandle1);
                 obj.hw.motorX2.Stop('brake', obj.hw.nxtHandle1);
@@ -63,8 +63,8 @@ classdef HardwareScanner < AbstractScanner
                     [x, y] = obj.hw.getPosition(); 
                     x = x+1; y = y+1;
                     image = [image, [x; y; obj.hw.getBrightness1()]];
-                    image = [image, [x+sensorThickness; y; obj.hw.getBrightness2()]];
-                    image = [image, [x+sensorThickness*2; y; obj.hw.getBrightness3()]];
+%                     image = [image, [x; y+sensorThickness; obj.hw.getBrightness2()]];
+%                     image = [image, [x; y+sensorThickness*2; obj.hw.getBrightness3()]];
                 end
                 obj.hw.motorX1.Stop('brake', obj.hw.nxtHandle1);
                 obj.hw.motorX2.Stop('brake', obj.hw.nxtHandle1);
@@ -84,7 +84,7 @@ classdef HardwareScanner < AbstractScanner
             minY = min(image(2,:));
 
             xResolution = 200;
-            yResolution = 40;
+            yResolution = 200;
 
             image(1,:) = (image(1,:) - minX) ./ (maxX-minX) .* (xResolution-1)+1;
             image(2,:) = (image(2,:) - minY) ./ (maxY-minY) .* (yResolution-1)+1;
@@ -127,6 +127,11 @@ classdef HardwareScanner < AbstractScanner
             end
 
             imshow(uint8(imageMatrix))
+
+
+            ableitungH = diff(imageMatrix);
+            ableitungV = diff(imageMatrix');
+            
 
 %             negativeValues = find(image(1,:)<0);
 %             image(:, negativeValues) = zeros( [3,length(negativeValues)]);
