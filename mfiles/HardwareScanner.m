@@ -208,32 +208,42 @@ classdef HardwareScanner < AbstractScanner
             obj.hw = hal;
         end
 
-        function peaksID = detectPeaks(obj, RawImageData)
-            window_size = 50;
-            threshold = 2;
+        function peaksID = detectPeaks(obj, RawImageData, numPeaks)
+            window_size = 20;
+            threshold_max = 2;
+            threshold_step = 0.25;
+            threshold_min = 1;
+            peaksID = [];
 
             smoothed = smooth(max(RawImageData(3,:))-RawImageData(3,:), 10);
             differ = smooth(diff(smoothed), 10);
-
-            for i = 1:(length(differ)-window_size)
-                lmax = max(differ(i:(window_size+i)));
-                lmin = min(differ(i:(window_size+i)));
-              
+            threshold = threshold_max;
+            while length(peaksID) < numPeaks && threshold >= threshold_min
+                i = 1;
+                peaksID = [];
+                fprintf('Try with threshold: %d\n', threshold);
+                while i <= (length(differ)-window_size)
+                    window = differ(i:(window_size+i));
+                    [vmax, imax] = max(window);
+                    [vmin, imin] = min(window);
+                    plot(window);
+                    axis([1,window_size,-7,7]);          
+                    if(vmax > threshold && vmin < -threshold)
+                        fprintf('found peak at %d\n', round(i+((imax+imin)/2)));
+                        peaksID = [peaksID, round(i+((imax+imin)/2))];
+                        if(length(peaksID) == numPeaks)
+                            break;
+                        end
+                        i = i + window_size;
+                        pause(1);
+                    else
+                        i = i + 1;
+                    end
+                    pause(0.001);
+                end
+                threshold = threshold - threshold_step;
             end
-            [pks,locs1] = findpeaks( differ, 'NPEAKS', 2,'MINPEAKHEIGHT', 3);
             
-            differ = -differ;
-            [pks,locs2] = findpeaks( differ, 'NPEAKS', 2,'MINPEAKHEIGHT', 3);
-
-            s1 = size(locs1);
-            s2 = size(locs2);
-
-            if(s1(1) <= 1 || s2(1) <= 1)
-                plot(RawImageData(3,:));
-                error('Peaks not detected');
-            end
-
-            peaksID = round([0.5*(locs2(1)+locs1(1)), 0.5*(locs2(2)+locs1(2))]);            
         end
 
 
@@ -241,17 +251,20 @@ classdef HardwareScanner < AbstractScanner
         function firstScan(obj)
             disp('First Scan...');
 
-            YimageRawData = obj.readLine(330,0,330,400);
-            peaksIDs = obj.detectPeaks(YimageRawData)
+            YimageRawData = obj.readLine(400,0,400,400);
+            peaksIDs = obj.detectPeaks(YimageRawData, 2);
 
             obj.yStartSoduko = YimageRawData(2, peaksIDs(1));
             obj.cellHeight = YimageRawData(2, peaksIDs(2)) - YimageRawData(2, peaksIDs(1));
 
             XimageRawData = obj.readLine(0,120,600,120);
-            peaksIDs = obj.detectPeaks(XimageRawData)
+            peaksIDs = obj.detectPeaks(XimageRawData, 2);
 
             obj.xStartSoduko = YimageRawData(1, peaksIDs(1));
             obj.cellWidth = XimageRawData(1, peaksIDs(2)) - XimageRawData(1, peaksIDs(1));
+
+            fprintf('X:%d Y:%d; Width:%d Height:%d\n', obj.xStartSoduko,...
+                obj.yStartSoduko, obj.cellWidth, obj.cellHeight);
 
             
 
