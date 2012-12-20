@@ -15,10 +15,14 @@ classdef HardwareScanner < AbstractScanner
     
     properties (GetAccess = 'private', SetAccess = 'private')
         hw = 0;
+        
         xStartSoduko = 0;
         yStartSoduko = 0;
         cellWidth = 0;
         cellHeight = 0;
+        
+        binMatrix = [];
+        
     end
     
     methods(Access = 'private')
@@ -333,6 +337,18 @@ classdef HardwareScanner < AbstractScanner
 
 
 
+        end
+        
+        % Do the thrid scan
+        function thirdScan(obj)
+            
+            for i=1:9
+                for j=1:9
+                    if(obj.binMatrix(i, j))
+                        
+                    end
+                end
+            end
         end
 
         function scanCells(obj)
