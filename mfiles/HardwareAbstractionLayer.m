@@ -121,11 +121,11 @@ classdef HardwareAbstractionLayer < handle
         
         %% START: Pencil-Control
         function putPenDown(obj)
-            obj.setMotorZ(3, 3);
+            obj.setMotorZ(9, 20);
             obj.motorZ.SendToNXT(obj.nxtHandle2);
         end
         function pickPenUp(obj)
-            obj.setMotorZ(3, -3);
+            obj.setMotorZ(9, -20);
             obj.motorZ.SendToNXT(obj.nxtHandle2);
         end
         %% end
@@ -320,10 +320,10 @@ classdef HardwareAbstractionLayer < handle
             y = floor(y);
 
             if( x~=x_old)
-                obj.moveRight( y-y_old );
+                obj.moveRight( x-x_old );
             end
             if(y ~= y_old)
-                obj.moveForwards( x-x_old );
+                obj.moveForwards( y-y_old );
             end
 
 
