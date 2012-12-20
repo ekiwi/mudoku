@@ -22,7 +22,7 @@ function varargout = MainGUI(varargin)
 
 % Edit the above text to modify the response to help MainGUI
 
-% Last Modified by GUIDE v2.5 18-Dec-2012 15:31:35
+% Last Modified by GUIDE v2.5 20-Dec-2012 15:06:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -229,3 +229,10 @@ end
 
 
 %% end
+
+
+% --- Executes on button press in pushbutton10.
+function pushbutton10_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
