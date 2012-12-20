@@ -179,14 +179,14 @@ classdef HardwareAbstractionLayer < handle
         
         % moves right asynchron
         function moveRight(obj, steps)            
-            obj.setMotorX(steps, -50);            
+            obj.setMotorX(steps, -25);            
             obj.motorX.SendToNXT(obj.nxtHandle1);
         end
         
         
         % moves left asynchron
         function moveLeft(obj, steps)
-            obj.setMotorX(steps, 50);            
+            obj.setMotorX(steps, 25);            
             obj.motorX.SendToNXT(obj.nxtHandle1);
         end
         

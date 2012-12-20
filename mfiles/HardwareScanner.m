@@ -15,6 +15,10 @@ classdef HardwareScanner < AbstractScanner
     
     properties (GetAccess = 'private', SetAccess = 'private')
         hw = 0;
+        xStartSoduko = 0;
+        yStartSoduko = 0;
+        cellWidth = 0;
+        cellHeight = 0;
     end
     
     methods(Access = 'private')
@@ -161,12 +165,16 @@ classdef HardwareScanner < AbstractScanner
             value = rawImageData(3,i);
         end
         
+        % Goes to the left bottom corner of a cell
+        function goToCell(obj, i, j)
+            obj.hw.moveToXY(obj.xStartSoduko+obj.cellWidth*i, obj.yStartSoduko+obj.cellHeight*j);
+        end
 
     end
     
     methods
 
-
+        % Reads a line
         function rawImageData = readLine(obj, x_start, y_start, x_end, y_end)
             
             rawImageData = [];
@@ -200,19 +208,52 @@ classdef HardwareScanner < AbstractScanner
             obj.hw = hal;
         end
 
+        function peaksID = detectPeaks(obj, RawImageData)
+            window_size = 50;
+            threshold = 2;
+
+            smoothed = smooth(max(RawImageData(3,:))-RawImageData(3,:), 10);
+            differ = smooth(diff(smoothed), 10);
+
+            for i = 1:(length(differ)-window_size)
+                lmax = max(differ(i:(window_size+i)));
+                lmin = min(differ(i:(window_size+i)));
+              
+            end
+            [pks,locs1] = findpeaks( differ, 'NPEAKS', 2,'MINPEAKHEIGHT', 3);
+            
+            differ = -differ;
+            [pks,locs2] = findpeaks( differ, 'NPEAKS', 2,'MINPEAKHEIGHT', 3);
+
+            s1 = size(locs1);
+            s2 = size(locs2);
+
+            if(s1(1) <= 1 || s2(1) <= 1)
+                plot(RawImageData(3,:));
+                error('Peaks not detected');
+            end
+
+            peaksID = round([0.5*(locs2(1)+locs1(1)), 0.5*(locs2(2)+locs1(2))]);            
+        end
+
+
         % Do the first scan
         function firstScan(obj)
             disp('First Scan...');
 
-            YimageRawData = obj.readLine(370,0,370,350);
-            [pks,locs] = findpeaks( smooth(max(YimageRawData(3,:))-YimageRawData(3,:), 20), 'NPEAKS', 2,'MINPEAKHEIGHT', 30)
-            yStartSoduko = YimageRawData(2, locs(1));
-            heightCell = YimageRawData(2, locs(2)) - YimageRawData(2, locs(1));
+            YimageRawData = obj.readLine(330,0,330,400);
+            peaksIDs = obj.detectPeaks(YimageRawData)
 
-            XimageRawData = obj.readLine(0,150,600,150);
-            [pks,locs] = findpeaks( smooth(max(XimageRawData(3,:))-XimageRawData(3,:)), 'NPEAKS', 2, 'MINPEAKHEIGHT', 10)
-            xStartSoduko = YimageRawData(1, locs(1));
-            widthCell = XimageRawData(1, locs(2)) - XimageRawData(1, locs(1));
+            obj.yStartSoduko = YimageRawData(2, peaksIDs(1));
+            obj.cellHeight = YimageRawData(2, peaksIDs(2)) - YimageRawData(2, peaksIDs(1));
+
+            XimageRawData = obj.readLine(0,120,600,120);
+            peaksIDs = obj.detectPeaks(XimageRawData)
+
+            obj.xStartSoduko = YimageRawData(1, peaksIDs(1));
+            obj.cellWidth = XimageRawData(1, peaksIDs(2)) - XimageRawData(1, peaksIDs(1));
+
+            
 
 % 
 %             % Scan a small area (there have to be at least one soduko box)
@@ -252,7 +293,17 @@ classdef HardwareScanner < AbstractScanner
         % Do the second scan
         function secondScan(obj)
             disp('Second Scan...');
-            
+
+
+                
+            rawBrightData = [];
+            scansPerRow = 3;
+            for row=0:(8*scansPerRow)
+                rawBrightData = [rawBrightData, ...
+                                 obj.readLine(obj.xStartSoduko, obj.yStartSoduko + (row/scansPerRow)*obj.cellHeight,...
+                                              obj.xStartSoduko+obj.cellWidth, obj.yStartSoduko + (row/scansPerRow)*obj.cellHeight);];
+            end
+
             rawImageData = obj.scanArea(0,0,obj.hw.maxStepsWidth, 200, 50);
             
             [imageData xScale xMin yScale yMin] = scaleRawImageData(rawImageData, 200, 100);
