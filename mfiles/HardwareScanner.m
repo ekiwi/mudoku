@@ -39,7 +39,7 @@ classdef HardwareScanner < AbstractScanner
             pos = [0, 0];   % xPosition and yPosition
             
             usedSensor = 0; % 0: SENSOR_1   1: SENSOR_3
-            if(x > obj.hw.maxStepWidth/2)
+            if(x > obj.hw.maxStepsWidth/2)
                 usedSensor = 1;
                 x = x - 740;
             end
@@ -201,6 +201,8 @@ classdef HardwareScanner < AbstractScanner
             rawImageData = [];
             obj.hw.moveToXY(x_start, y_start);  % x and y changed
 
+            pause(1);
+
             if(y_end ~= y_start)
                 obj.hw.moveForwards(y_end-y_start);
             end
@@ -238,15 +240,15 @@ classdef HardwareScanner < AbstractScanner
 
             smoothed = smooth(max(RawImageData(3,:))-RawImageData(3,:), 10);
             differ = smooth(diff(smoothed), 10);
-            axis([1, length(differ), -5 5]);
-            plot(differ);
+            %axis([1, length(differ), -5 5]);
+            %plot(differ);
 
 
             threshold = threshold_max;
             while length(peaksID) < numPeaks && threshold >= threshold_min
                 i = 1;
                 peaksID = [];
-                fprintf('Try with threshold: %d\n', threshold);
+                %fprintf('Try with threshold: %d\n', threshold);
                 while i <= (length(differ)-window_size)
                     window = differ(i:(window_size+i));
                     [vmax, imax] = max(window);
@@ -254,7 +256,7 @@ classdef HardwareScanner < AbstractScanner
                     %plot(window);
                     %axis([1,window_size,-7,7]);          
                     if(vmax > threshold && vmin < -threshold)
-                        fprintf('found peak at %d\n', round(i+((imax+imin)/2)));
+                        %fprintf('found peak at %d\n', round(i+((imax+imin)/2)));
                         peaksID = [peaksID, round(i+((imax+imin)/2))];
                         if(length(peaksID) == numPeaks)
                             break;
@@ -275,23 +277,27 @@ classdef HardwareScanner < AbstractScanner
         % Do the first scan
         function firstScan(obj)
             disp('First Scan...');
+% 
+%             YimageRawData = obj.readLine(400,0,400,400);
+%             peaksIDs = obj.detectPeaks(YimageRawData, 2);
+% 
+%             obj.yStartSoduko = YimageRawData(2, peaksIDs(1));
+%             obj.cellHeight = YimageRawData(2, peaksIDs(2)) - YimageRawData(2, peaksIDs(1));
+% 
+%             XimageRawData = obj.readLine(0,120,600,120);
+%             peaksIDs = obj.detectPeaks(XimageRawData, 2);
+% 
+%             obj.xStartSoduko = YimageRawData(1, peaksIDs(1));
+%             obj.cellWidth = XimageRawData(1, peaksIDs(2)) - XimageRawData(1, peaksIDs(1));
+% 
+%             fprintf('X:%d Y:%d; Width:%d Height:%d\n', obj.xStartSoduko,...
+%                 obj.yStartSoduko, obj.cellWidth, obj.cellHeight);
 
-            YimageRawData = obj.readLine(400,0,400,400);
-            peaksIDs = obj.detectPeaks(YimageRawData, 2);
-
-            obj.yStartSoduko = YimageRawData(2, peaksIDs(1));
-            obj.cellHeight = YimageRawData(2, peaksIDs(2)) - YimageRawData(2, peaksIDs(1));
-
-            XimageRawData = obj.readLine(0,120,600,120);
-            peaksIDs = obj.detectPeaks(XimageRawData, 2);
-
-            obj.xStartSoduko = YimageRawData(1, peaksIDs(1));
-            obj.cellWidth = XimageRawData(1, peaksIDs(2)) - XimageRawData(1, peaksIDs(1));
-
-            fprintf('X:%d Y:%d; Width:%d Height:%d\n', obj.xStartSoduko,...
-                obj.yStartSoduko, obj.cellWidth, obj.cellHeight);
-
-            
+            obj.yStartSoduko = 0;
+            obj.xStartSoduko = 0;
+            obj.cellWidth = 200;
+            obj.cellHeight = 90;
+             
 
 % 
 %             % Scan a small area (there have to be at least one soduko box)
@@ -305,7 +311,7 @@ classdef HardwareScanner < AbstractScanner
 % 
 %             obj.saveData(grayRawImage, 'grayRawImage');
 % 
-% %             grayRawImage = obj.loadData('grayRawImage');
+%             grayRawImage = obj.loadData('grayRawImage');
 % 
 %             % Now do some filtering...
 %             grayRawImageFilled = interpolation(grayRawImage);
@@ -342,7 +348,7 @@ classdef HardwareScanner < AbstractScanner
                                               obj.xStartSoduko+obj.cellWidth, obj.yStartSoduko + (row/scansPerRow)*obj.cellHeight);];
             end
 
-            rawImageData = obj.scanArea(0,0,obj.hw.maxStepsWidth, 200, 50);
+            rawImageData = obj.scanArea(0,0,obj.hw.maxStepsWidth, 200, 10);
             
             [imageData xScale xMin yScale yMin] = scaleRawImageData(rawImageData, 200, 100);
             

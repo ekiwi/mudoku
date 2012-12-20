@@ -99,7 +99,7 @@ classdef HardwareAbstractionLayer < handle
             obj.motorY1 = NXTMotor('A', 'SpeedRegulation', 1, 'ActionAtTachoLimit', 'HoldBrake');
             obj.motorY2 = NXTMotor('B', 'SpeedRegulation', 1);
             obj.motorX = NXTMotor('C', 'SpeedRegulation', 1, 'ActionAtTachoLimit', 'HoldBrake');
-            obj.motorZ = NXTMotor('A', 'SpeedRegulation', 1, 'ActionAtTachoLimit', 'HoldBrake');
+            obj.motorZ = NXTMotor('A');
         end
         
         % destructor
@@ -121,11 +121,11 @@ classdef HardwareAbstractionLayer < handle
         
         %% START: Pencil-Control
         function putPenDown(obj)
-            obj.setMotorZ(9, 20);
+            obj.setMotorZ(8, 20);
             obj.motorZ.SendToNXT(obj.nxtHandle2);
         end
         function pickPenUp(obj)
-            obj.setMotorZ(9, -20);
+            obj.setMotorZ(8, -20);
             obj.motorZ.SendToNXT(obj.nxtHandle2);
         end
         %% end

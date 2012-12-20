@@ -14,106 +14,118 @@ classdef Drawer < GUIEnabledObject
     
     properties
         hw = 0;
-        fontSize = 30;
+        fontSize = 200;
     end
     
-    methods (Access = 'Private')
+    methods (Access = 'private')
         function plotZero(obj)
+            fontSize = obj.fontSize;
             obj.hw.putPenDown();
-            obj.hw.moveToRelativeXY(fontSize, 0);
+            obj.hw.moveToRelativeXY(fontSize*2, 0);
             obj.hw.moveToRelativeXY(0, fontSize);
-            obj.hw.moveToRelativeXY(-fontSize, 0);
+            obj.hw.moveToRelativeXY(-fontSize*2, 0);
             obj.hw.moveToRelativeXY(0, -fontSize);
-            obj.hw.picPenUp();
+            obj.hw.pickPenUp();
         end
         function plotOne(obj)
-            obj.hw.moveToRelativeXY(fontSize/2, 0);
+            fontSize = obj.fontSize;
+            obj.hw.moveToRelativeXY(fontSize, 0);
             obj.hw.putPenDown();
             obj.hw.moveToRelativeXY(0, fontSize);
-            obj.hw.moveToRelativeXY(-fontSize/3, -fontSize/3);
-            obj.hw.picPenUp();
+            obj.hw.moveToRelativeXY(-fontSize/2, -fontSize/2);
+            obj.hw.pickPenUp();
         end
         function plotTwo(obj)
-            obj.hw.moveToRelativeXY(fontSize, 0);
+            fontSize = obj.fontSize;
+            obj.hw.moveToRelativeXY(fontSize*2, 0);
             obj.hw.putPenDown();
-            obj.hw.moveToRelativeXY(-fontSize, 0);
+            obj.hw.moveToRelativeXY(-fontSize*2, 0);
             obj.hw.moveToRelativeXY(0, fontSize/2);
-            obj.hw.moveToRelativeXY(fontSize, 0);
+            obj.hw.moveToRelativeXY(fontSize*2, 0);
             obj.hw.moveToRelativeXY(0, fontSize/2);
-            obj.hw.moveToRelativeXY(-fontSize, 0);
-            obj.hw.picPenUp();
+            obj.hw.moveToRelativeXY(-fontSize*2, 0);
+            obj.hw.pickPenUp();
         end
         function plotThree(obj)
+            fontSize = obj.fontSize;
             obj.hw.putPenDown();
-            obj.hw.moveToRelativeXY(fontSize, 0);
+            obj.hw.moveToRelativeXY(fontSize*2, 0);
             obj.hw.moveToRelativeXY(0, fontSize);
-            obj.hw.moveToRelativeXY(-fontSize, 0);
-            obj.hw.picPenUp();
+            obj.hw.moveToRelativeXY(-fontSize*2, 0);
+            obj.hw.pickPenUp();
             obj.hw.moveToRelativeXY(0, -fontSize/2);
             obj.hw.putPenDown();
-            obj.hw.moveToRelativeXY(fontSize, 0);
-            obj.hw.picPenUp();
+            obj.hw.moveToRelativeXY(fontSize*2, 0);
+            obj.hw.pickPenUp();
         end
         function plotFour(obj)
-            obj.hw.moveToRelativeXY(fontSize,0);
+            fontSize = obj.fontSize;
+            obj.hw.moveToRelativeXY(fontSize*2,0);
             obj.hw.putPenDown();
             obj.hw.moveToRelativeXY(0,fontSize);
             obj.hw.moveToRelativeXY(0,-fontSize/2);
-            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(-fontSize*2,0);
             obj.hw.moveToRelativeXY(0,fontSize/2);
-            obj.picPenUp();            
+            obj.hw.pickPenUp();            
         end
         function plotFive(obj)
+            fontSize = obj.fontSize;
             obj.hw.putPenDown();
-            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.moveToRelativeXY(fontSize*2,0);
             obj.hw.moveToRelativeXY(0,fontSize/2);
-            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(-fontSize*2,0);
             obj.hw.moveToRelativeXY(0,fontSize/2);
-            obj.hw.moveToRelativeXY(fontSize,0);
-            obj.hw.picPenUp();
+            obj.hw.moveToRelativeXY(fontSize*2,0);
+            obj.hw.pickPenUp();
         end
         function plotSix(obj)
+            fontSize = obj.fontSize;
             obj.hw.putPenDown();
-            obj.hw.moveToRelativeXY(fontSize,0);
-            obj.hw.moveToRelativeXY(fontSIze/2,0);
-            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(fontSize*2,0);
+            obj.hw.moveToRelativeXY(0,fontSize/2);
+            obj.hw.moveToRelativeXY(-fontSize*2,0);
             obj.hw.moveToRelativeXY(0,-fontSize/2);
+            obj.hw.pickPenUp();
             obj.hw.moveToRelativeXY(0,fontSize);
-            obj.hw.moveToRelativeXY(fontSize/2,0);
-            obj.picPenUp();
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(0,-fontSize/2);
+            obj.hw.pickPenUp();
         end
         function plotSeven(obj)
-            obj.hw.moveToRelativeXY(fontSize,0);
+            fontSize = obj.fontSize;
+            obj.hw.moveToRelativeXY(fontSize*2,0);
             obj.hw.putPenDown();
             obj.hw.moveToRelativeXY(0,fontSize);
-            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(-fontSize*2,0);
             obj.hw.moveToRelativeXY(0,-fontSize/3);
-            obj.hw.picPenUp();
+            obj.hw.pickPenUp();
         end
         function plotEight(obj)
+            fontSize = obj.fontSize;
             obj.hw.putPenDown();
-            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.moveToRelativeXY(fontSize*2,0);
             obj.hw.moveToRelativeXY(0,fontSize);
-            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(-fontSize*2,0);
             obj.hw.moveToRelativeXY(0,-fontSize);
-            obj.hw.picPenUp();
+            obj.hw.pickPenUp();
             obj.hw.moveToRelativeXY(0,fontSize/2);
             obj.hw.putPenDown();
-            obj.hw.moveToRelativeXY(fontSize,0);
-            obj.hw.picPenUp();
+            obj.hw.moveToRelativeXY(fontSize*2,0);
+            obj.hw.pickPenUp();
         end
         function plotNine(obj)
-            obj.hw.moveToRelativeXY(fontSize,0);
+            fontSize = obj.fontSize;
+            obj.hw.moveToRelativeXY(fontSize*2,0);
             obj.hw.putPenDown();
             obj.hw.moveToRelativeXY(0,fontSize);
-            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(-fontSize*2,0);
             obj.hw.moveToRelativeXY(0,-fontSize/2);
-            obj.hw.moveToRelativeXY(fontSize,0);
-            obj.hw.picPenp();
+            obj.hw.moveToRelativeXY(fontSize*2,0);
+            obj.hw.pickPenUp();
         end
     end
     
-    methods
+    methods (Access = 'public')
         % constructor
         function obj = Drawer(hal)
             obj.hw = hal;
