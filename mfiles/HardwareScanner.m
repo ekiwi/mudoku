@@ -15,10 +15,14 @@ classdef HardwareScanner < AbstractScanner
     
     properties (GetAccess = 'private', SetAccess = 'private')
         hw = 0;
+        
         xStartSoduko = 0;
         yStartSoduko = 0;
         cellWidth = 0;
         cellHeight = 0;
+        
+        binMatrix = [];
+        
     end
     
     methods(Access = 'private')
@@ -30,9 +34,16 @@ classdef HardwareScanner < AbstractScanner
         % height: Steps forward
         % xStep: Size of steps right
         function rawImageData = scanArea(obj, x, y, width, height, xStep)
-            
+                                    
             rawImageData = [];
             pos = [0, 0];   % xPosition and yPosition
+            
+            usedSensor = 0; % 0: SENSOR_1   1: SENSOR_3
+            if(x > obj.hw.maxStepWidth/2)
+                usedSensor = 1;
+                x = x - 740;
+            end
+            
             obj.hw.moveToXY(x, y);  % x and y changed
             
             while(pos(1) < width)
@@ -47,8 +58,12 @@ classdef HardwareScanner < AbstractScanner
 %                     if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
 %                     if(pos(2)<1) pos(2) = 1; end
                     
-                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()-10]];
-%                     rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
+                    if(usedSensor == 0)
+                        rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()]];
+                    else
+                        rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness3()]];
+                    end
+                      % rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
 %                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
                 
@@ -73,7 +88,11 @@ classdef HardwareScanner < AbstractScanner
 %                     if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
 %                     if(pos(2)<1) pos(2) = 1; end
                     
-                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()-10]];
+                    if(usedSensor == 0)
+                        rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()]];
+                    else
+                        rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness3()]];
+                    end
 %                     rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
 %                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
@@ -159,15 +178,17 @@ classdef HardwareScanner < AbstractScanner
             
         end
 
+        % Value
         function value = getValueNear(rawImageData, x, y)
             delta = abs(rawImageData(1,:)-x) + abs(rawImageData(2,:)-y);
             [~, i] = min(delta);
             value = rawImageData(3,i);
         end
         
-        % Goes to the left bottom corner of a cell
-        function goToCell(obj, i, j)
-            obj.hw.moveToXY(obj.xStartSoduko+obj.cellWidth*i, obj.yStartSoduko+obj.cellHeight*j);
+        % Get the position of the left bottom corner of a cell
+        function [x y] = getCellPosition(obj, i, j)
+            x = obj.xStartSoduko+obj.cellWidth*i;
+            y = obj.yStartSoduko+obj.cellHeight*j;
         end
 
     end
@@ -346,6 +367,27 @@ classdef HardwareScanner < AbstractScanner
 
 
 
+        end
+        
+        % Do the thrid scan
+        function thirdScan(obj)
+            
+            im = ImageRecognition();
+            for i=1:9
+                for j=1:9
+                    if(obj.binMatrix(i, j))
+                        [x y] = obj.getCellPosition(i-1, j-1);
+                        imageData = obj.scanArea(x, y, obj.cellWidth, obj.cellHeight, 10);
+                        
+                        [imageData xScale xMin yScale yMin] = obj.scaleRawImageData(imageData, obj.cellWidth, obj.cellHeight);
+                        grayImage = createGrayImageFromRawData(imageData);
+                        grayImageFilled = interpolation(grayImage);
+                        number = im.parseCell(grayImageFilled);
+                        
+                        obj.binMatrix(i, j) = number;
+                    end
+                end
+            end
         end
 
         function scanCells(obj)
