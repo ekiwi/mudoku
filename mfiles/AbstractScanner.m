@@ -1,4 +1,4 @@
-classdef AbstractScanner < handle
+classdef AbstractScanner < handle & DataSaveable
 
     % AbstractScanner: Scanner Interface
     %
@@ -33,13 +33,11 @@ classdef AbstractScanner < handle
         end
 
         function saveCells(obj, fileName)
-            c = obj.cells;
-            save(fileName, 'c', '-mat');
+            obj.saveData(obj.cells, fileName);
         end
 
         function loadCells(obj, fileName)
-            load(fileName, 'c', '-mat');
-            obj.cells = c;
+            obj.cells = obj.loadData(fileName);
         end
 
         function [ x y ] = getNumCells(obj)

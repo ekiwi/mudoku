@@ -19,13 +19,15 @@ classdef SoftwareScanner < AbstractScanner
     
     methods
         function obj = SoftwareScanner(file)
-            if nargs > 1
-                obj.fileName = file;
-            end
+            obj.fileName = file;
         end
 
         function firstScan(obj)
             %TODO: Load File
+        end
+
+        function secondScan(obj)
+            disp('Doing second scan ..... not really.');
         end
 
         function scanCells(obj)
