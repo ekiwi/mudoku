@@ -202,7 +202,7 @@ end
 
 
 % draws a 2d greyscale image onto the main drawing area
-function showImage(handles, image)
+function showImage(handles, image, min, max)
 disp('showImage was called');
 
 
