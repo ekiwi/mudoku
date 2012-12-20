@@ -225,14 +225,14 @@ classdef HardwareAbstractionLayer < handle
         
         % moves forward asynchron
         function moveForwards(obj, steps)
-            obj.setMotorY(steps, -25);       
+            obj.setMotorY(steps, -10);       
             obj.motorY1.SendToNXT(obj.nxtHandle1);
             obj.motorY2.SendToNXT(obj.nxtHandle1);
         end
         
         % moves backward asynchron
         function moveBackwards(obj, steps)
-            obj.setMotorY(steps, 25);       
+            obj.setMotorY(steps, 10);       
             obj.motorY1.SendToNXT(obj.nxtHandle1);
             obj.motorY2.SendToNXT(obj.nxtHandle1);
         end
