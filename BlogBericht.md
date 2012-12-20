@@ -1,5 +1,22 @@
 #Einleitung
 
-Der Sudoku-Solver erfasst, l√∂st und f√ºllt Sodukus korrekt aus.
-Like a Boss!
+Der Sudoku-Solver erfasst, loest und fuellt Sodukus autonom und korrekt aus.
+Zumindest, sollte er das...
 
+
+
+
+## Die Konstruktion
+Der Roboter besteht aus zwei NXT-Bricks, vier Motoren, einem Touch-, drei Lichtsensoren und einer groﬂen Anzahl an sonstigen Lego-Steinen.
+Die Konstruktion entspricht der eines Autos mit Hinterradantrieb und einer Linearf¸hrung als Stoﬂstange, die mit Hilfe eines Motors die Lichtsensoren beweglich machen.
+Dadurch kˆnnen senkrecht zur Fahrtrichtung die Sensoren bewegt werden, an die der Motor, der den Stift hoch und herunter l‰sst, gekoppelt ist. Durch die Konstruktion ist
+eine schnelle Bewegung des Schreib- und Lesekopfes bei asynchroner Bewegung gew‰hrleistet. Die Lichtsensoren sind mit einer Kette verbunden,die durch ein Getriebe vom Motor bewegt wird.
+
+
+## Die Programmierung
+
+
+
+
+## Probleme
+Ein groﬂes Projekt bringt auch immer groﬂe Probleme mit sich. 
