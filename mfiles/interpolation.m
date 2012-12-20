@@ -13,8 +13,9 @@ for i=1:width
                 % ADD
             end
         end
-        for j=1:b
-            array(j,i)=array(b+1,i);
+        letzteStelleNaN=b-1;
+        for j=1:letzteStelleNaN
+            array(j,i)=array(letzteStelleNaN+1,i);
         end
     end
 end
