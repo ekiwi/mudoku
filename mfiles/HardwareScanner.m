@@ -154,6 +154,12 @@ classdef HardwareScanner < AbstractScanner
             end
             
         end
+
+        function value = getValueNear(rawImageData, x, y)
+            delta = abs(rawImageData(1,:)-x) + abs(rawImageData(2,:)-y);
+            [~, i] = min(delta);
+            value = rawImageData(3,i);
+        end
         
     end
     
