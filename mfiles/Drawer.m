@@ -27,14 +27,32 @@ classdef Drawer < GUIEnabledObject
             obj.hw.picPenUp();
         end
         function plotOne(obj)
+            obj.hw.moveToRelativeXY(fontSize/2, 0);
             obj.hw.putPenDown();
             obj.hw.moveToRelativeXY(0, fontSize);
             obj.hw.moveToRelativeXY(-fontSize/3, -fontSize/3);
             obj.hw.picPenUp();
         end
         function plotTwo(obj)
+            obj.hw.moveToRelativeXY(fontSize, 0);
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(-fontSize, 0);
+            obj.hw.moveToRelativeXY(0, fontSize/2);
+            obj.hw.moveToRelativeXY(fontSize, 0);
+            obj.hw.moveToRelativeXY(0, fontSize/2);
+            obj.hw.moveToRelativeXY(-fontSize, 0);
+            obj.hw.picPenUp();
         end
         function plotThree(obj)
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(fontSize, 0);
+            obj.hw.moveToRelativeXY(0, fontSize);
+            obj.hw.moveToRelativeXY(-fontSize, 0);
+            obj.hw.picPenUp();
+            obj.hw.moveToRelativeXY(0, -fontSize/2);
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(fontSize, 0);
+            obj.hw.picPenUp();
         end
         function plotFour(obj)
         end
