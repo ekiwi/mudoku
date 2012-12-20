@@ -169,9 +169,10 @@ classdef HardwareScanner < AbstractScanner
             value = rawImageData(3,i);
         end
         
-        % Goes to the left bottom corner of a cell
-        function goToCell(obj, i, j)
-            obj.hw.moveToXY(obj.xStartSoduko+obj.cellWidth*i, obj.yStartSoduko+obj.cellHeight*j);
+        % Get the position of the left bottom corner of a cell
+        function [x y] = getCellPosition(obj, i, j)
+            x = obj.xStartSoduko+obj.cellWidth*i;
+            y = obj.yStartSoduko+obj.cellHeight*j;
         end
 
     end
@@ -342,10 +343,19 @@ classdef HardwareScanner < AbstractScanner
         % Do the thrid scan
         function thirdScan(obj)
             
+            im = ImageRecognition();
             for i=1:9
                 for j=1:9
                     if(obj.binMatrix(i, j))
+                        [x y] = obj.getCellPosition(i-1, j-1);
+                        imageData = obj.scanArea(x, y, obj.cellWidth, obj.cellHeight, 10);
                         
+                        [imageData xScale xMin yScale yMin] = obj.scaleRawImageData(imageData, obj.cellWidth, obj.cellHeight);
+                        grayImage = createGrayImageFromRawData(imageData);
+                        grayImageFilled = interpolation(grayImage);
+                        number = im.parseCell(grayImageFilled);
+                        
+                        obj.binMatrix(i, j) = number;
                     end
                 end
             end
