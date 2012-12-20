@@ -48,8 +48,8 @@ classdef HardwareScanner < AbstractScanner
                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
                 
-                obj.hw.motorX1.Stop('HoldBrake', obj.hw.nxtHandle1);
-                obj.hw.motorX2.Stop('HoldBrake', obj.hw.nxtHandle1);
+                obj.hw.motorY1.Stop('brake', obj.hw.nxtHandle1);
+                obj.hw.motorY2.Stop('brake', obj.hw.nxtHandle1);
                 %% END
                 
                 % Abort if end has been reached
@@ -74,8 +74,8 @@ classdef HardwareScanner < AbstractScanner
                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
                 
-                obj.hw.motorX1.Stop('HoldBrake', obj.hw.nxtHandle1);
-                obj.hw.motorX2.Stop('HoldBrake', obj.hw.nxtHandle1);
+                obj.hw.motorY1.Stop('brake', obj.hw.nxtHandle1);
+                obj.hw.motorY2.Stop('brake', obj.hw.nxtHandle1);
                 %% END
                 
                 obj.hw.moveRightW(xStep);
@@ -110,8 +110,8 @@ classdef HardwareScanner < AbstractScanner
             yScale = (maxY-minY)/yRes;
             yMin = minY;
             
-            image(1,:) = round((image(1,:) - minX) ./ xScale);
-            image(2,:) = round((image(2,:) - minY) ./ xScale);
+            imageData(1,:) = round((imageData(1,:) - minX) ./ xScale);
+            imageData(2,:) = round((imageData(2,:) - minY) ./ yScale);
 
         end
         
@@ -133,8 +133,8 @@ classdef HardwareScanner < AbstractScanner
             minY = min(imageData(2, :));
             maxY = max(imageData(2, :));
             
-            width = maxX-minX;
-            height= maxY-minY;
+            width = maxX-minX+1;
+            height= maxY-minY+1;
             
             % create NaN matrix
             rawGrayImage = ones(width, height)*NaN;
@@ -142,8 +142,8 @@ classdef HardwareScanner < AbstractScanner
             
             for i=1:numEntries
                 
-                x = imageData(1,i);
-                y = imageData(2,i);
+                x = imageData(1,i)+1;
+                y = imageData(2,i)+1;
                                 
                 if(isnan(rawGrayImage(x, y)))
                     rawGrayImage(x, y) = imageData(3, i);
@@ -169,14 +169,29 @@ classdef HardwareScanner < AbstractScanner
             % Scan a small area (there have to be at least one soduko box)
             rawImageData = obj.scanArea(0,0,300, 300, 50);
             
-            [imageData xScale xMin yScale yMin] = scaleRawImageData(rawImageData, 200, 100);
+            [imageData xScale xMin yScale yMin] = obj.scaleRawImageData(rawImageData, 300, 300);
             
-            grayRawImage = createGrayImageFromRawData(imageData);
+            grayRawImage = obj.createGrayImageFromRawData(imageData);
             
             figure(1); imshow(uint8(grayRawImage));
-            
+
+            obj.saveData(grayRawImage, 'grayRawImage');
+
             % Now do some filtering...
+            grayRawImageFilled = interpolation(grayRawImage);
+            figure(2); imshow(uint8(grayRawImageFilled));
+
+            obj.saveData(grayRawImageFilled, 'grayRawImage');
+
+            firstPeakMatrix = [];
+            numRows = length(grayRawImageFilled(:,10));
+            for y=1:numRows
+                [peak location] = findpeaks(grayRawImageFilled(:,y), 'THRESHOLD', 10, 'NPEAKS', 1);
+                firstPeakMatrix = [firstPeakMatrix, [location; y]];
+            end
+
             
+
             % extract start point of soduko
             
             % extract size of box
