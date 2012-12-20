@@ -40,12 +40,12 @@ classdef HardwareScanner < AbstractScanner
                     [a, b] = obj.hw.getPosition(); 
                     pos(1) = a-x;  
                     pos(2) = b-y;  
-                    if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
-                    if(pos(2)<1) pos(2) = 1; end
+%                     if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
+%                     if(pos(2)<1) pos(2) = 1; end
                     
-                    rawImageData = [rawImageData, [a; b; obj.hw.getBrightness1()-10]];
-                    rawImageData = [rawImageData, [a+370; b; obj.hw.getBrightness2()+60]];
-                    rawImageData = [rawImageData, [a+740; b; obj.hw.getBrightness3()]];
+                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()-10]];
+%                     rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
+%                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
                 
                 obj.hw.motorY1.Stop('brake', obj.hw.nxtHandle1);
@@ -66,12 +66,12 @@ classdef HardwareScanner < AbstractScanner
                     [a, b] = obj.hw.getPosition(); 
                     pos(1) = a-x;  
                     pos(2) = b-y;  
-                    if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
-                    if(pos(2)<1) pos(2) = 1; end
+%                     if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
+%                     if(pos(2)<1) pos(2) = 1; end
                     
-                    rawImageData = [rawImageData, [a; b; obj.hw.getBrightness1()-10]];
-                    rawImageData = [rawImageData, [a+370; b; obj.hw.getBrightness2()+60]];
-                    rawImageData = [rawImageData, [a+740; b; obj.hw.getBrightness3()]];
+                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()-10]];
+%                     rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
+%                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
                 
                 obj.hw.motorY1.Stop('brake', obj.hw.nxtHandle1);
@@ -82,8 +82,8 @@ classdef HardwareScanner < AbstractScanner
                 [a, b] = obj.hw.getPosition(); 
                 pos(1) = a-x;  
                 pos(2) = b-y; 
-                if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
-                if(pos(2)<1) pos(2) = 1; end
+%                 if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
+%                 if(pos(2)<1) pos(2) = 1; end
                     
             end
             
@@ -155,6 +155,7 @@ classdef HardwareScanner < AbstractScanner
             
         end
         
+
     end
     
     methods
