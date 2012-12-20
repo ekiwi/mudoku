@@ -96,10 +96,10 @@ classdef HardwareAbstractionLayer < handle
             OpenLight(SENSOR_2, 'ACTIVE', obj.nxtHandle1);
             OpenLight(SENSOR_3, 'ACTIVE', obj.nxtHandle1);
 
-            obj.motorY1 = NXTMotor('A', 'SpeedRegulation', 1);
+            obj.motorY1 = NXTMotor('A', 'SpeedRegulation', 1, 'ActionAtTachoLimit', 'HoldBrake');
             obj.motorY2 = NXTMotor('B', 'SpeedRegulation', 1);
-            obj.motorX = NXTMotor('C');
-            obj.motorZ = NXTMotor('A');
+            obj.motorX = NXTMotor('C', 'SpeedRegulation', 1, 'ActionAtTachoLimit', 'HoldBrake');
+            obj.motorZ = NXTMotor('A', 'SpeedRegulation', 1, 'ActionAtTachoLimit', 'HoldBrake');
         end
         
         % destructor
@@ -254,12 +254,10 @@ classdef HardwareAbstractionLayer < handle
             obj.moveLeft(0);
             while(~obj.reachedEnd()) end
             obj.motorX.Stop('off', obj.nxtHandle1);
-
             obj.motorX.ResetPosition(obj.nxtHandle1);
-
         end
 
-        
+        % move to the max right position
         function moveMaxRight(obj)
             pos = obj.getPosition();
             steps = obj.maxStepsWidth - pos(1);
@@ -313,7 +311,7 @@ classdef HardwareAbstractionLayer < handle
         
         % moves to a specific location
         function moveToXY(obj, x, y)
-
+                        
             [x_old, y_old] = obj.getPosition();
 
             x_old = floor(x_old);
@@ -334,6 +332,13 @@ classdef HardwareAbstractionLayer < handle
             obj.motorX.WaitFor(0, obj.nxtHandle1);
 
         end
+        
+        % moves to a specific relative location
+        function moveToRelativeXY(obj, xRel, yRel)
+            [x_old, y_old] = obj.getPosition();
+            obj.moveToXY(x_old + xRel, y_old + yRel);
+        end
+        
         %% end
         
     end

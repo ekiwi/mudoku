@@ -14,8 +14,41 @@ classdef Drawer < GUIEnabledObject
     
     properties
         hw = 0;
+        fontSize = 30;
     end
     
+    methods (Access = 'Private')
+        function plotZero(obj)
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(fontSize, 0);
+            obj.hw.moveToRelativeXY(0, fontSize);
+            obj.hw.moveToRelativeXY(-fontSize, 0);
+            obj.hw.moveToRelativeXY(0, -fontSize);
+            obj.hw.picPenUp();
+        end
+        function plotOne(obj)
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(0, fontSize);
+            obj.hw.moveToRelativeXY(-fontSize/3, -fontSize/3);
+            obj.hw.picPenUp();
+        end
+        function plotTwo(obj)
+        end
+        function plotThree(obj)
+        end
+        function plotFour(obj)
+        end
+        function plotFive(obj)
+        end
+        function plotSix(obj)
+        end
+        function plotSeven(obj)
+        end
+        function plotEight(obj)
+        end
+        function plotNine(obj)
+        end
+    end
     
     methods
         % constructor
@@ -28,7 +61,29 @@ classdef Drawer < GUIEnabledObject
         
             obj.hw.moveToXY(x, y);
             
-            if(number < 0 || number > 9)
+            switch(number)
+                case 0
+                    obj.plotZero();
+                case 1
+                    obj.plotOne();
+                case 2
+                    obj.plotTwo();
+                case 3
+                    obj.plotThree();
+                case 4
+                    obj.plotFour();
+                case 5
+                    obj.plotFive();
+                case 6
+                    obj.plotSix();
+                case 7
+                    obj.plotSeven();
+                case 8
+                    obj.plotEight();
+                case 9
+                    obj.plotNine();
+                    
+                otherwise
                 error('Wrong number as input. Only numbers between 0-9 allowed.');
             end
         
