@@ -8,9 +8,14 @@ for i=1:width
         b=1;
         while(isnan(array(b,i)))
             b=b+1;
-            if((b+1)>height)
+            if((b)>height)
                 % Komplette Spalte NaN
-                % ADD
+                if(i==1)
+                    array(:,i)=0;
+                else
+                    vektor = [array(:,i-1)];
+                    array(:,i)=vektor;
+                end 
             end
         end
         letzteStelleNaN=b-1;
@@ -28,7 +33,11 @@ for i=1:width
             b=b-1;
             if((b-1)<1)
                 % Komplette Spalte NaN
-                % ADD
+                if((b+1)>height)
+                    % Komplette Spalte NaN
+                    vektor = [array(:,i-1)];
+                    array(:,i)=vektor;
+                end
             end
         end
         letzteStelleNaN = b+1;
