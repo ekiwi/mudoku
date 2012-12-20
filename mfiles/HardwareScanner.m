@@ -238,6 +238,10 @@ classdef HardwareScanner < AbstractScanner
 
             smoothed = smooth(max(RawImageData(3,:))-RawImageData(3,:), 10);
             differ = smooth(diff(smoothed), 10);
+            axis([1, length(differ), -5 5]);
+            plot(differ);
+
+
             threshold = threshold_max;
             while length(peaksID) < numPeaks && threshold >= threshold_min
                 i = 1;
@@ -247,8 +251,8 @@ classdef HardwareScanner < AbstractScanner
                     window = differ(i:(window_size+i));
                     [vmax, imax] = max(window);
                     [vmin, imin] = min(window);
-                    plot(window);
-                    axis([1,window_size,-7,7]);          
+                    %plot(window);
+                    %axis([1,window_size,-7,7]);          
                     if(vmax > threshold && vmin < -threshold)
                         fprintf('found peak at %d\n', round(i+((imax+imin)/2)));
                         peaksID = [peaksID, round(i+((imax+imin)/2))];
@@ -256,11 +260,11 @@ classdef HardwareScanner < AbstractScanner
                             break;
                         end
                         i = i + window_size;
-                        pause(1);
+                        %pause(1);
                     else
                         i = i + 1;
                     end
-                    pause(0.001);
+                    %pause(0.001);
                 end
                 threshold = threshold - threshold_step;
             end
