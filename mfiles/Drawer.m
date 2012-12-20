@@ -55,16 +55,61 @@ classdef Drawer < GUIEnabledObject
             obj.hw.picPenUp();
         end
         function plotFour(obj)
+            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(0,fontSize);
+            obj.hw.moveToRelativeXY(0,-fontSize/2);
+            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(0,fontSize/2);
+            obj.picPenUp();            
         end
         function plotFive(obj)
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.moveToRelativeXY(0,fontSize/2);
+            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(0,fontSize/2);
+            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.picPenUp();
         end
         function plotSix(obj)
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.moveToRelativeXY(fontSIze/2,0);
+            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(0,-fontSize/2);
+            obj.hw.moveToRelativeXY(0,fontSize);
+            obj.hw.moveToRelativeXY(fontSize/2,0);
+            obj.picPenUp();
         end
         function plotSeven(obj)
+            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(0,fontSize);
+            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(0,-fontSize/3);
+            obj.hw.picPenUp();
         end
         function plotEight(obj)
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.moveToRelativeXY(0,fontSize);
+            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(0,-fontSize);
+            obj.hw.picPenUp();
+            obj.hw.moveToRelativeXY(0,fontSize/2);
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.picPenUp();
         end
         function plotNine(obj)
+            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.putPenDown();
+            obj.hw.moveToRelativeXY(0,fontSize);
+            obj.hw.moveToRelativeXY(-fontSize,0);
+            obj.hw.moveToRelativeXY(0,-fontSize/2);
+            obj.hw.moveToRelativeXY(fontSize,0);
+            obj.hw.picPenp();
         end
     end
     
