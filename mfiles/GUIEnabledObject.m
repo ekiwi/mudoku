@@ -16,7 +16,7 @@ classdef GUIEnabledObject < handle
         %   * handles: GUI handles handle they need to contain handles to
         %              the following functions:
         %   * showeProgress(handles, step, progress) handle
-        %   * showImage(handles, 2d_matrix) handle
+        %   * showImage(handles, 2d_matrix, min, max) handle
         %   * showSudoku(hanles, 9x9_matrix) handle
         function connectGUI(obj, handles)
             obj.guiHandles = handles;
@@ -34,11 +34,11 @@ classdef GUIEnabledObject < handle
             obj.showProgress_Handle(obj.guiHandles, step, progress);
         end
 
-        function showImage(obj, image)
+        function showImage(obj, image, min, max)
             if ~isa(obj.showImage_Handle, 'function_handle')
                 error('updateProgress handle not set. You need to call connectGUI first!');
             end
-            obj.showImage_Handle(obj.guiHandles, image);
+            obj.showImage_Handle(obj.guiHandles, image, min, max);
         end
 
         function showSudoku(obj, sudoku)
