@@ -159,6 +159,37 @@ classdef HardwareScanner < AbstractScanner
     end
     
     methods
+
+
+        function rawImageData = readLine(obj, x_start, y_start, x_end, y_end)
+            
+            rawImageData = [];
+            obj.hw.moveToXY(x_start, y_start);  % x and y changed
+
+            if(y_end ~= y_start)
+                obj.hw.moveForwards(y_end-y_start);
+            end
+            if(x_end ~= x_start)
+                obj.hw.moveRight(x_end-x_start);
+            end
+            data1 = obj.hw.motorX.ReadFromNXT(obj.hw.nxtHandle1);
+            data2 = obj.hw.motorY1.ReadFromNXT(obj.hw.nxtHandle1);
+
+            while(data1.Power ~= 0 || data2.Power ~= 0)
+
+                [a, b] = obj.hw.getPosition();                  
+                rawImageData = [rawImageData, [a; b; obj.hw.getBrightness1()-10]];
+%                     rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
+%                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
+
+                data1 = obj.hw.motorX.ReadFromNXT(obj.hw.nxtHandle1);
+                data2 = obj.hw.motorY1.ReadFromNXT(obj.hw.nxtHandle1);
+            end
+
+        end
+
+
+
         function obj = HardwareScanner(hal)
             obj.hw = hal;
         end
@@ -166,43 +197,46 @@ classdef HardwareScanner < AbstractScanner
         % Do the first scan
         function firstScan(obj)
             disp('First Scan...');
-            
-            % Scan a small area (there have to be at least one soduko box)
-            rawImageData = obj.scanArea(0,0,370, 200, 30);
-            
-            [imageData xScale xMin yScale yMin] = obj.scaleRawImageData(rawImageData, 900, 300);
-            
-            grayRawImage = obj.createGrayImageFromRawData(imageData);
-            
-            figure(1); imshow(uint8(grayRawImage));
 
-            obj.saveData(grayRawImage, 'grayRawImage');
+            YimageRawData = obj.readLine(370,0,370,350);
+            [pks,locs] = findpeaks( smooth(max(YimageRawData(3,:))-YimageRawData(3,:), 20), 'NPEAKS', 2,'MINPEAKHEIGHT', 30)
+            yStartSoduko = YimageRawData(2, locs(1));
+            heightCell = YimageRawData(2, locs(2)) - YimageRawData(2, locs(1));
 
-%             grayRawImage = obj.loadData('grayRawImage');
+            XimageRawData = obj.readLine(0,150,600,150);
+            [pks,locs] = findpeaks( smooth(max(XimageRawData(3,:))-XimageRawData(3,:)), 'NPEAKS', 2, 'MINPEAKHEIGHT', 10)
+            xStartSoduko = YimageRawData(1, locs(1));
+            widthCell = XimageRawData(1, locs(2)) - XimageRawData(1, locs(1));
 
-            % Now do some filtering...
-            grayRawImageFilled = interpolation(grayRawImage);
-
-            figure(2); imshow(uint8(grayRawImageFilled'));
-
-            obj.saveData(grayRawImageFilled, 'grayRawImageFilled');
-
-            firstPeakMatrix = [];
-            numRows = length(grayRawImageFilled(:,10));
-            for y=1:numRows
-                [peak location] = findpeaks(grayRawImageFilled(:,y), 'THRESHOLD', 10, 'NPEAKS', 1);
-                if(~isempty(location))
-                    firstPeakMatrix = [firstPeakMatrix, [location; y]];                    
-                end
-            end
-
-            
-
-            % extract start point of soduko
-            
-            % extract size of box
-            
-            % Test-IDEA: Move to a specific box
+% 
+%             % Scan a small area (there have to be at least one soduko box)
+%             rawImageData = obj.scanArea(0,0,370, 200, 30);
+%             
+%             [imageData xScale xMin yScale yMin] = obj.scaleRawImageData(rawImageData, 900, 300);
+%             
+%             grayRawImage = obj.createGrayImageFromRawData(imageData);
+%             
+%             figure(1); imshow(uint8(grayRawImage));
+% 
+%             obj.saveData(grayRawImage, 'grayRawImage');
+% 
+% %             grayRawImage = obj.loadData('grayRawImage');
+% 
+%             % Now do some filtering...
+%             grayRawImageFilled = interpolation(grayRawImage);
+% 
+%             figure(2); imshow(uint8(grayRawImageFilled'));
+% 
+%             obj.saveData(grayRawImageFilled, 'grayRawImageFilled');
+% 
+%             firstPeakMatrix = [];
+%             numRows = length(grayRawImageFilled(:,10));
+%             for y=1:numRows
+%                 [peak location] = findpeaks(grayRawImageFilled(:,y), 'THRESHOLD', 10, 'NPEAKS', 1);
+%                 if(~isempty(location))
+%                     firstPeakMatrix = [firstPeakMatrix, [location; y]];                    
+%                 end
+%             end
             
             
         end
