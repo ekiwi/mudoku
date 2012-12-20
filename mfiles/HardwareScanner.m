@@ -111,7 +111,7 @@ classdef HardwareScanner < AbstractScanner
             yMin = minY;
             
             imageData(1,:) = round((imageData(1,:) - minX) ./ xScale);
-            imageData(2,:) = round((imageData(2,:) - minY) ./ xScale);
+            imageData(2,:) = round((imageData(2,:) - minY) ./ yScale);
 
         end
         
@@ -174,9 +174,24 @@ classdef HardwareScanner < AbstractScanner
             grayRawImage = obj.createGrayImageFromRawData(imageData);
             
             figure(1); imshow(uint8(grayRawImage));
-            
+
+            obj.saveData(grayRawImage, 'grayRawImage');
+
             % Now do some filtering...
+            grayRawImageFilled = interpolation(grayRawImage);
+            figure(2); imshow(uint8(grayRawImageFilled));
+
+            obj.saveData(grayRawImageFilled, 'grayRawImage');
+
+            firstPeakMatrix = [];
+            numRows = length(grayRawImageFilled(:,10));
+            for y=1:numRows
+                [peak location] = findpeaks(grayRawImageFilled(:,y), 'THRESHOLD', 10, 'NPEAKS', 1);
+                firstPeakMatrix = [firstPeakMatrix, [location; y]];
+            end
+
             
+
             % extract start point of soduko
             
             % extract size of box

@@ -1,4 +1,4 @@
-function [array] = interpolationSpalte(array)
+function [array] = interpolation(array)
 
 [height width] = size(array);
 
