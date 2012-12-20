@@ -34,9 +34,16 @@ classdef HardwareScanner < AbstractScanner
         % height: Steps forward
         % xStep: Size of steps right
         function rawImageData = scanArea(obj, x, y, width, height, xStep)
-            
+                                    
             rawImageData = [];
             pos = [0, 0];   % xPosition and yPosition
+            
+            usedSensor = 0; % 0: SENSOR_1   1: SENSOR_3
+            if(x > obj.hw.maxStepWidth/2)
+                usedSensor = 1;
+                x = x - 740;
+            end
+            
             obj.hw.moveToXY(x, y);  % x and y changed
             
             while(pos(1) < width)
@@ -51,8 +58,12 @@ classdef HardwareScanner < AbstractScanner
 %                     if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
 %                     if(pos(2)<1) pos(2) = 1; end
                     
-                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()-10]];
-%                     rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
+                    if(usedSensor == 0)
+                        rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()]];
+                    else
+                        rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness3()]];
+                    end
+                      % rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
 %                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
                 
@@ -77,7 +88,11 @@ classdef HardwareScanner < AbstractScanner
 %                     if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
 %                     if(pos(2)<1) pos(2) = 1; end
                     
-                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()-10]];
+                    if(usedSensor == 0)
+                        rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()]];
+                    else
+                        rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness3()]];
+                    end
 %                     rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
 %                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
@@ -163,6 +178,7 @@ classdef HardwareScanner < AbstractScanner
             
         end
 
+        % Value
         function value = getValueNear(rawImageData, x, y)
             delta = abs(rawImageData(1,:)-x) + abs(rawImageData(2,:)-y);
             [~, i] = min(delta);
