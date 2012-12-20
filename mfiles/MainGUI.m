@@ -55,6 +55,10 @@ function MainGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for MainGUI
 handles.output = hObject;
 
+% Instance of our hardware
+handles.hw = HardwareAbstractionLayer();
+handles.scanner = HardwareScanner(handles.hw);
+
 % Save Custom Function Pointer
 handles.showProgress = @showProgress;
 handles.showImage = @showImage;
@@ -91,6 +95,11 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+handles.scanner.firstScan();
+handles.scanner.secondScan();
+handles.scanner.thirdScan();
+% Update handles structure
+guidata(hObject, handles);
 
 % --------------------------------------------------------------------
 function Untitled_1_Callback(hObject, eventdata, handles)
@@ -236,3 +245,7 @@ function pushbutton10_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+handles.hw.calibrateSledge();
+% Update handles structure
+guidata(hObject, handles);
