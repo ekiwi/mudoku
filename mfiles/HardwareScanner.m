@@ -40,12 +40,12 @@ classdef HardwareScanner < AbstractScanner
                     [a, b] = obj.hw.getPosition(); 
                     pos(1) = a-x;  
                     pos(2) = b-y;  
-                    if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
-                    if(pos(2)<1) pos(2) = 1; end
+%                     if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
+%                     if(pos(2)<1) pos(2) = 1; end
                     
-                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()]];
-                    rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()]];
-                    rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
+                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()-10]];
+%                     rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
+%                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
                 
                 obj.hw.motorY1.Stop('brake', obj.hw.nxtHandle1);
@@ -66,12 +66,12 @@ classdef HardwareScanner < AbstractScanner
                     [a, b] = obj.hw.getPosition(); 
                     pos(1) = a-x;  
                     pos(2) = b-y;  
-                    if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
-                    if(pos(2)<1) pos(2) = 1; end
+%                     if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
+%                     if(pos(2)<1) pos(2) = 1; end
                     
-                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()]];
-                    rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()]];
-                    rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
+                    rawImageData = [rawImageData, [pos(1); pos(2); obj.hw.getBrightness1()-10]];
+%                     rawImageData = [rawImageData, [pos(1)+370; pos(2); obj.hw.getBrightness2()+60]];
+%                     rawImageData = [rawImageData, [pos(1)+740; pos(2); obj.hw.getBrightness3()]];
                 end
                 
                 obj.hw.motorY1.Stop('brake', obj.hw.nxtHandle1);
@@ -82,8 +82,8 @@ classdef HardwareScanner < AbstractScanner
                 [a, b] = obj.hw.getPosition(); 
                 pos(1) = a-x;  
                 pos(2) = b-y; 
-                if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
-                if(pos(2)<1) pos(2) = 1; end
+%                 if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
+%                 if(pos(2)<1) pos(2) = 1; end
                     
             end
             
@@ -161,6 +161,7 @@ classdef HardwareScanner < AbstractScanner
             value = rawImageData(3,i);
         end
         
+
     end
     
     methods
@@ -173,9 +174,9 @@ classdef HardwareScanner < AbstractScanner
             disp('First Scan...');
             
             % Scan a small area (there have to be at least one soduko box)
-            rawImageData = obj.scanArea(0,0,300, 300, 50);
+            rawImageData = obj.scanArea(0,0,370, 200, 30);
             
-            [imageData xScale xMin yScale yMin] = obj.scaleRawImageData(rawImageData, 300, 300);
+            [imageData xScale xMin yScale yMin] = obj.scaleRawImageData(rawImageData, 900, 300);
             
             grayRawImage = obj.createGrayImageFromRawData(imageData);
             
@@ -183,17 +184,22 @@ classdef HardwareScanner < AbstractScanner
 
             obj.saveData(grayRawImage, 'grayRawImage');
 
+%             grayRawImage = obj.loadData('grayRawImage');
+
             % Now do some filtering...
             grayRawImageFilled = interpolation(grayRawImage);
-            figure(2); imshow(uint8(grayRawImageFilled));
 
-            obj.saveData(grayRawImageFilled, 'grayRawImage');
+            figure(2); imshow(uint8(grayRawImageFilled'));
+
+            obj.saveData(grayRawImageFilled, 'grayRawImageFilled');
 
             firstPeakMatrix = [];
             numRows = length(grayRawImageFilled(:,10));
             for y=1:numRows
                 [peak location] = findpeaks(grayRawImageFilled(:,y), 'THRESHOLD', 10, 'NPEAKS', 1);
-                firstPeakMatrix = [firstPeakMatrix, [location; y]];
+                if(~isempty(location))
+                    firstPeakMatrix = [firstPeakMatrix, [location; y]];                    
+                end
             end
 
             
