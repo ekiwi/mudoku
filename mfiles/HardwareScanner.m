@@ -224,7 +224,99 @@ classdef HardwareScanner < AbstractScanner
             end
 
         end
-
+        
+        % Plot the scanner image
+        function timer_callback_fcn(obj, event, string_arg)
+            global image
+            
+            bild = interpolation(image);
+            
+            figure(1);
+            imshow(bild);
+            
+        end
+        
+        
+        function testScan(obj)
+            global image fig
+            
+            obj.hw.moveToXY(0,0);        
+            
+            width = 1000;
+            height = 1000;
+            xStep = 20;
+            x = 0;
+            y = 0;
+            
+            image = ones(width, height);
+            
+            t = timer('TimerFcn',@timer_callback_fcn,'Period', 0.2,'ExecutionMode','fixedDelay');
+            figure(1);
+            start(t);
+            
+            while(pos(1) < width)
+                
+                %% START: Move Forwards
+                obj.hw.moveForwards(0);
+                
+                while(pos(2)<height)
+                    [a, b] = obj.hw.getPosition(); 
+                    pos(1) = a-x;  
+                    pos(2) = b-y;  
+                    if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
+                    if(pos(2)<1) pos(2) = 1; end
+                    if(pos(1)>width) pos(1) = width; end % No negative positions allowed
+                    if(pos(2)>height) pos(2) = height; end
+                    
+                    image(pos(1), pos(2)) = obj.hw.getBrightness1();
+                    image(pos(1)+370, pos(2)) = obj.hw.getBrightness2();
+                    image(pos(1)+370*2, pos(2)) = obj.hw.getBrightness3();
+                end
+                
+                obj.hw.motorY1.Stop('brake', obj.hw.nxtHandle1);
+                obj.hw.motorY2.Stop('brake', obj.hw.nxtHandle1);
+                %% END
+                
+                % Abort if end has been reached
+                if(pos(1)+xStep>=width)
+                    break;
+                end
+                obj.hw.moveRightW(xStep);
+                    
+                                
+                %% START: Move Backwards
+                obj.hw.moveBackwards(0);
+                
+                while(pos(2)>1)
+                    [a, b] = obj.hw.getPosition(); 
+                    pos(1) = a-x;  
+                    pos(2) = b-y; 
+                    if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
+                    if(pos(2)<1) pos(2) = 1; end
+                    if(pos(1)>width) pos(1) = width; end % No negative positions allowed
+                    if(pos(2)>height) pos(2) = height; end 
+                    
+                    
+                    image(pos(1), pos(2)) = obj.hw.getBrightness1();
+                    image(pos(1)+370, pos(2)) = obj.hw.getBrightness2();
+                    image(pos(1)+370*2, pos(2)) = obj.hw.getBrightness3();
+                end
+                
+                obj.hw.motorY1.Stop('brake', obj.hw.nxtHandle1);
+                obj.hw.motorY2.Stop('brake', obj.hw.nxtHandle1);
+                %% END
+                
+                obj.hw.moveRightW(xStep);
+                [a, b] = obj.hw.getPosition(); 
+                    if(pos(1)<1) pos(1) = 1; end % No negative positions allowed
+                    if(pos(2)<1) pos(2) = 1; end
+                    if(pos(1)>width) pos(1) = width; end % No negative positions allowed
+                    if(pos(2)>height) pos(2) = height; end 
+                    
+            end
+            
+            stop(t);
+        end
 
 
         function obj = HardwareScanner(hal)
